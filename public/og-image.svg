@@ -1,0 +1,71 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="1200" height="630" fill="#08080f"/>
+
+  <!-- Subtle gradient overlay -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a14;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#08080f;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34d399;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Molecular hexagon motif (top right, subtle) -->
+  <g opacity="0.15" transform="translate(950, 80)">
+    <circle cx="0" cy="0" r="40" fill="none" stroke="#34d399" stroke-width="2"/>
+    <circle cx="35" cy="20" r="8" fill="#34d399"/>
+    <circle cx="35" cy="-20" r="8" fill="#34d399"/>
+    <circle cx="0" cy="-40" r="8" fill="#34d399"/>
+    <circle cx="-35" cy="-20" r="8" fill="#34d399"/>
+    <circle cx="-35" cy="20" r="8" fill="#34d399"/>
+    <circle cx="0" cy="40" r="8" fill="#34d399"/>
+    <line x1="0" y1="0" x2="35" y2="20" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="0" x2="35" y2="-20" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="0" x2="0" y2="-40" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="0" x2="-35" y2="-20" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="0" x2="-35" y2="20" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="0" x2="0" y2="40" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+  </g>
+
+  <!-- Main title -->
+  <text x="60" y="140" font-family="'Playfair Display', serif" font-size="72" font-weight="300" fill="#e2ddd5" letter-spacing="-1">
+    Peptide Atlas
+  </text>
+
+  <!-- Subtitle -->
+  <text x="60" y="210" font-family="'Lato', sans-serif" font-size="32" font-weight="300" fill="#34d399">
+    Citation-Backed Research Database
+  </text>
+
+  <!-- Description -->
+  <text x="60" y="270" font-family="'Lato', sans-serif" font-size="18" font-weight="300" fill="rgba(226, 221, 213, 0.65)" line-height="1.6">
+    Structured pharmacokinetic data with peer-reviewed PubMed citations
+  </text>
+
+  <!-- Accent line -->
+  <rect x="60" y="290" width="300" height="2" fill="url(#accentGradient)" opacity="0.8"/>
+
+  <!-- Features list -->
+  <g font-family="'JetBrains Mono', monospace" font-size="14" font-weight="400" fill="rgba(226, 221, 213, 0.55)" letter-spacing="0.05em">
+    <text x="60" y="350">✓ 53+ Peptides</text>
+    <text x="60" y="390">✓ Real-time PubMed Feed</text>
+    <text x="60" y="430">✓ PWA Mobile Support</text>
+    <text x="60" y="470">✓ User Authentication &amp; Tracking</text>
+  </g>
+
+  <!-- Footer tagline -->
+  <text x="60" y="580" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="300" fill="rgba(226, 221, 213, 0.4)" letter-spacing="0.08em" text-transform="uppercase">
+    FOR RESEARCH USE ONLY
+  </text>
+
+  <!-- URL -->
+  <text x="1140" y="610" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="300" fill="rgba(226, 221, 213, 0.3)" letter-spacing="0.05em" text-anchor="end">
+    peptide-atlas.vercel.app
+  </text>
+</svg>

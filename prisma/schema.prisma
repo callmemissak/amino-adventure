@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./peptides.db"
+}
+
+model Peptide {
+  id                    Int      @id @default(autoincrement())
+  slug                  String   @unique
+  name                  String
+  aliases               String   @default("") // JSON array stored as string
+  category              String
+  mechanism_of_action   String
+  research_applications String   // JSON array stored as string
+  typical_dosage_range  String
+  half_life             String
+  administration_method String
+  pubmed_links          String   // JSON array stored as string
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}

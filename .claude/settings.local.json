@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
+      "Bash(npm --version)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Users/amand/AppData/Roaming/**)",
+      "Read(//c/Users/amand/**)",
+      "Read(//c//**)",
+      "Bash(cmd.exe /c 'echo %NVM_HOME%')",
+      "Bash(cmd.exe /c 'echo %PATH%')",
+      "Bash(tr ';' '\\\\n')",
+      "Bash(cmd.exe /c \"npm --version\")",
+      "Bash(powershell.exe -Command \"npm --version\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Program Files\\\\nodejs'' -ErrorAction SilentlyContinue; Get-ChildItem ''C:\\\\Users\\\\amand\\\\AppData\\\\Local\\\\fnm*'' -ErrorAction SilentlyContinue; Get-ChildItem ''C:\\\\Users\\\\amand\\\\AppData\\\\Roaming\\\\nvm'' -ErrorAction SilentlyContinue; Get-ChildItem ''C:\\\\Users\\\\amand\\\\AppData\\\\Local\\\\pnpm'' -ErrorAction SilentlyContinue; Get-Command node -ErrorAction SilentlyContinue | Select-Object Source\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\amand\\\\OneDrive\\\\Desktop\\\\peptide-atlas\\\\prisma\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\amand\\\\OneDrive\\\\Desktop\\\\peptide-atlas\\\\lib\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\amand\\\\OneDrive\\\\Desktop\\\\peptide-atlas\\\\app\\\\api\\\\peptides\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\amand\\\\OneDrive\\\\Desktop\\\\peptide-atlas\\\\app\\\\api\\\\peptides\\\\[slug]\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\amand\\\\OneDrive\\\\Desktop\\\\peptide-atlas\\\\app\\\\peptides\\\\[slug]\")",
+      "WebSearch",
+      "Bash(grep -r \"lovable\\\\|Lovable\" /c/Users/amand/OneDrive/Desktop/peptide-atlas --include=*.js --include=*.jsx --include=*.json --include=*.md)",
+      "Bash(find /c/Users/amand/OneDrive/Desktop/peptide-atlas -type f \\\\\\(-name *.jsx -o -name *.js -o -name *.json -o -name *.md -o -name *.sql -o -name *.env \\\\\\) -newer 2026-03-11T20:00:00Z -ls)",
+      "Bash(find /c/Users/amand/OneDrive/Desktop/peptide-atlas -type f \\\\\\(-name *.lovable -o -name *lovable* \\\\\\))",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
