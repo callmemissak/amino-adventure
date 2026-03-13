@@ -19,6 +19,7 @@
         "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"
+        "@sendgrid/mail": "^7.7.0",
   },
   "devDependencies": {
     "prisma": "^6.4.0"
