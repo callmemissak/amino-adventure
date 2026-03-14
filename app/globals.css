@@ -1,12 +1,12 @@
 :root {
-  --bg: #f8fafc;
+  --bg: #f5f7fb;
   --bg-elevated: #ffffff;
   --bg-muted: #f8fafc;
   --border: #e2e8f0;
   --border-strong: #bfdbfe;
-  --text: #111827;
+  --text: #1f2937;
   --text-muted: #475569;
-  --text-soft: #6b7280;
+  --text-soft: #64748b;
   --primary: #2563eb;
   --secondary: #2563eb;
   --primary-hover: #1d4ed8;
@@ -333,7 +333,7 @@ button {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
 }
 
 .pb-panel,
@@ -642,21 +642,21 @@ button {
 }
 
 .pb-database-layout {
-  grid-template-columns: minmax(0, 1.72fr) minmax(250px, 0.66fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: flex-start;
-  gap: 18px;
+  gap: 0;
 }
 
-.pb-database-rail {
-  position: sticky;
-  top: calc(var(--pb-header-height) + var(--pb-toolbar-height) + 12px);
+.pb-database-support {
+  margin-top: 22px;
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 
 .pb-accordion-list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .pb-accordion-item {
@@ -671,8 +671,8 @@ button {
 
 .pb-accordion-item:hover,
 .pb-accordion-item.is-open {
-  border-color: #d1d5db;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.045);
 }
 
 .pb-accordion-trigger {
@@ -764,7 +764,7 @@ button {
 }
 
 .pb-accordion-panel {
-  padding: 0 16px 16px;
+  padding: 0 16px 18px;
   border-top: 1px solid var(--border);
   scroll-margin-top: calc(var(--pb-scroll-offset) + 8px);
 }
@@ -785,9 +785,9 @@ button {
 
 .pb-expanded-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
-  gap: 14px;
-  padding: 12px 0 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 14px 0 12px;
 }
 
 .pb-expanded-copy {
@@ -806,7 +806,7 @@ button {
   margin: 0;
   max-width: 58ch;
   color: var(--text-muted);
-  line-height: 1.6;
+  line-height: 1.7;
   font-size: 0.9rem;
 }
 
@@ -822,16 +822,28 @@ button {
 }
 
 .pb-review-block,
-.pb-review-block-grid {
+.pb-review-block-grid,
+.pb-reading-strip,
+.pb-secondary-grid,
+.pb-reading-flow {
   display: grid;
   gap: 14px;
 }
 
+.pb-reading-flow {
+  gap: 16px;
+}
+
+.pb-reading-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
 .pb-review-block {
-  padding: 14px;
+  padding: 12px;
   border-radius: 16px;
-  border: 1px solid #dbeafe;
-  background: #f8fbff;
+  border: 1px solid var(--border);
+  background: #f8fafc;
 }
 
 .pb-review-block-compact .pb-review-block-grid {
@@ -853,11 +865,6 @@ button {
 .pb-review-block-notes {
   padding-top: 6px;
   border-top: 1px solid #dbeafe;
-}
-
-.pb-accordion-grid {
-  grid-template-columns: minmax(0, 1.45fr) minmax(290px, 0.85fr);
-  align-items: flex-start;
 }
 
 .pb-section-grid {
@@ -886,11 +893,11 @@ button {
 }
 
 .pb-section-card {
-  padding: 14px 16px;
+  padding: 15px 16px;
   border-radius: 16px;
   background: #ffffff;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.02);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
 .pb-section-card-grid,
@@ -912,7 +919,7 @@ button {
 }
 
 .pb-studies-header {
-  padding-bottom: 6px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -924,6 +931,56 @@ button {
 .pb-quick-facts .pb-link-list {
   grid-template-columns: repeat(2, minmax(150px, 1fr));
   gap: 12px;
+}
+
+.pb-live-feed-block {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.pb-secondary-disclosure {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 6px 14px 14px;
+}
+
+.pb-secondary-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  padding: 10px 0;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.pb-secondary-summary::-webkit-details-marker {
+  display: none;
+}
+
+.pb-secondary-summary-note {
+  color: var(--text-soft);
+  font-family: "Courier New", monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pb-secondary-body {
+  display: grid;
+  gap: 14px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.pb-secondary-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .pb-citation-block {
@@ -947,14 +1004,14 @@ button {
   gap: 6px;
   padding: 8px 11px;
   border-radius: 12px;
-  border: 1px solid #bfdbfe;
-  background: var(--accent-bg);
+  border: 1px solid var(--border);
+  background: #f8fafc;
   color: var(--primary);
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .pb-inline-link:hover {
-  background: #eaf2ff;
+  background: #eff6ff;
   border-color: #bfdbfe;
   transform: none;
 }
@@ -983,7 +1040,7 @@ button {
 .pb-library-item,
 .pb-log-row {
   border-radius: 12px;
-  background: #fcfdff;
+  background: #f8fafc;
   border: 1px solid var(--border);
   padding: 12px;
 }
@@ -1102,11 +1159,11 @@ button {
 }
 
 .pb-warning-box {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  background: #fffaf0;
+  border: 1px solid #fde68a;
   color: var(--text);
   border-radius: var(--radius-sm);
-  padding: 18px;
+  padding: 16px;
 }
 
 .pb-detail-layout {
@@ -1165,7 +1222,7 @@ button {
 .pb-review-block .pb-fact-row,
 .pb-evidence-stats .pb-fact-row {
   padding: 12px 13px;
-  background: #fbfcfe;
+  background: #ffffff;
 }
 
 .pb-footer {
@@ -1226,9 +1283,11 @@ button {
   .pb-side-by-side-row,
   .pb-database-intro,
   .pb-database-layout,
+  .pb-database-support,
   .pb-expanded-hero,
   .pb-accordion-trigger,
-  .pb-accordion-grid,
+  .pb-reading-strip,
+  .pb-secondary-grid,
   .pb-section-grid,
   .pb-detail-grid-compact,
   .pb-link-module-grid,
@@ -1237,10 +1296,6 @@ button {
   .pb-review-block-grid,
   .pb-inventory-metrics {
     grid-template-columns: 1fr;
-  }
-
-  .pb-database-rail {
-    position: static;
   }
 
   .pb-accordion-side {

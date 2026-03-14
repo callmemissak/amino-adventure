@@ -318,30 +318,30 @@ export default function PeptaBaseHome({
                 </div>
               ) : null}
             </div>
+          </div>
 
-            <aside className="pb-database-rail">
-              <div className="pb-panel pb-panel-soft">
-                <div className="pb-eyebrow">Reading mode</div>
-                <h2 className="pb-card-title">Built to feel like a polished research tool.</h2>
-                <p className="pb-body">
-                  Cleaner collapsed cards, lighter metadata, deeper inline sections, and shareable peptide links keep the interface useful without feeling cramped.
-                </p>
+          <div className="pb-database-support">
+            <div className="pb-panel pb-panel-soft">
+              <div className="pb-eyebrow">Reading mode</div>
+              <h2 className="pb-card-title">The peptide entries stay first.</h2>
+              <p className="pb-body">
+                Search, scan, and read the peptide records inline. Supporting tools stay available below without crowding the main reading flow.
+              </p>
+            </div>
+
+            <ReconstitutionCalculator />
+
+            <div className="pb-panel pb-panel-soft">
+              <div className="pb-eyebrow">Premium workflows</div>
+              <h2 className="pb-card-title">Saved tracking, inventory, and protocol tools.</h2>
+              <p className="pb-body">
+                Dashboard features remain available as optional secondary tools instead of competing with the peptide content.
+              </p>
+              <div className="pb-inline-actions">
+                <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
+                <Link href="/saved-peptides" className="pb-button-secondary">Saved peptides</Link>
               </div>
-
-              <ReconstitutionCalculator />
-
-              <div className="pb-panel pb-panel-soft">
-                <div className="pb-eyebrow">Premium workflows</div>
-                <h2 className="pb-card-title">Saved tracking, inventory, and protocol tools.</h2>
-                <p className="pb-body">
-                  The database stays open and readable while premium-ready dashboard features stay available as secondary tools.
-                </p>
-                <div className="pb-inline-actions">
-                  <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
-                  <Link href="/saved-peptides" className="pb-button-secondary">Saved peptides</Link>
-                </div>
-              </div>
-            </aside>
+            </div>
           </div>
         </section>
       </main>
