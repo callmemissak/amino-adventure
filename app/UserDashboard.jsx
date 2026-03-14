@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { injectionSites } from "@/lib/peptabase-data";
 import { readSavedPeptideSlugs } from "@/lib/saved-peptides";
 import { calculateInventoryMetrics, readInventory, writeInventory } from "@/lib/inventory-tracker";
+import { readInjectionLogs, writeInjectionLogs } from "@/lib/injection-log";
 
 const initialInventory = [
   {
@@ -33,7 +34,7 @@ const initialLogs = [
 const tabCopy = {
   library: "Saved peptides and research links will live here.",
   inventory: "Track vial count, planned dosage, remaining doses, and estimated cycle duration.",
-  logs: "Log peptide, dose, unit, injection site, date, and notes.",
+  logs: "Log peptide injections with date, dose, and site, then review them in a timeline view.",
   notes: "Submit notes to developer for research feedback and corrections."
 };
 
@@ -101,6 +102,22 @@ export default function UserDashboard() {
   }, []);
 
   useEffect(() => {
+    function syncLogs() {
+      const stored = readInjectionLogs();
+      setLogs(stored.length > 0 ? stored : initialLogs);
+    }
+
+    syncLogs();
+    window.addEventListener("storage", syncLogs);
+    window.addEventListener("peptabase:injection-logs-updated", syncLogs);
+
+    return () => {
+      window.removeEventListener("storage", syncLogs);
+      window.removeEventListener("peptabase:injection-logs-updated", syncLogs);
+    };
+  }, []);
+
+  useEffect(() => {
     function syncSavedPeptides() {
       setSavedPeptides(readSavedPeptideSlugs());
     }
@@ -149,7 +166,8 @@ export default function UserDashboard() {
 
   const addLog = (event) => {
     event.preventDefault();
-    setLogs((current) => [
+
+    const nextLogs = [
       {
         id: `log-${Date.now()}`,
         peptide: logForm.peptide,
@@ -158,8 +176,11 @@ export default function UserDashboard() {
         date: logForm.date,
         notes: logForm.notes
       },
-      ...current
-    ]);
+      ...logs
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    setLogs(nextLogs);
+    writeInjectionLogs(nextLogs);
     setLogForm({ peptide: "", dose: "", unit: "mcg", date: "", notes: "" });
   };
 
@@ -295,13 +316,23 @@ export default function UserDashboard() {
             <textarea className="pb-textarea" placeholder="Notes" value={logForm.notes} onChange={(e) => setLogForm((current) => ({ ...current, notes: e.target.value }))} />
             <button className="pb-button" type="submit">Log injection</button>
           </form>
-          {logs.map((entry) => (
-            <div key={entry.id} className="pb-log-row">
-              <strong>{entry.peptide}</strong><br />
-              {entry.dose} · {entry.location} · {entry.date}<br />
-              <span className="pb-subtle">{entry.notes}</span>
-            </div>
-          ))}
+
+          {logs.length === 0 ? <div className="pb-empty">No injections logged yet. Add a peptide injection to start your timeline.</div> : null}
+          <div className="pb-timeline">
+            {logs.map((entry) => (
+              <div key={entry.id} className="pb-timeline-item">
+                <div className="pb-timeline-marker" aria-hidden="true" />
+                <div className="pb-timeline-content">
+                  <div className="pb-timeline-date">{entry.date}</div>
+                  <div className="pb-log-row">
+                    <strong>{entry.peptide}</strong><br />
+                    {entry.dose} | {entry.location}<br />
+                    <span className="pb-subtle">{entry.notes || "No notes added."}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
 

@@ -779,6 +779,54 @@ button {
   gap: 14px;
 }
 
+.pb-timeline,
+.pb-timeline-item,
+.pb-timeline-content {
+  display: grid;
+}
+
+.pb-timeline {
+  position: relative;
+  gap: 18px;
+}
+
+.pb-timeline::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: rgba(54, 230, 212, 0.18);
+}
+
+.pb-timeline-item {
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.pb-timeline-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--secondary) 0 35%, rgba(54, 230, 212, 0.18) 36% 100%);
+  position: relative;
+  z-index: 1;
+}
+
+.pb-timeline-content {
+  gap: 8px;
+}
+
+.pb-timeline-date {
+  color: var(--secondary);
+  font-family: "Courier New", monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .pb-inventory-card {
   border-radius: 16px;
   background: rgba(230, 237, 243, 0.03);
