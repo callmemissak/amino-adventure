@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Glp1ConcentrationCalculator, ReconstitutionCalculator } from "@/components/peptabase/Calculators";
+import { ReconstitutionCalculator } from "@/components/peptabase/Calculators";
+import LiveResearchFeed from "@/components/peptabase/LiveResearchFeed";
 
 function ReferenceList({ references }) {
   if (!references.length) {
@@ -25,7 +26,7 @@ function ReferenceList({ references }) {
 export default function PeptideDetailView({ peptide }) {
   return (
     <div className="pb-shell">
-      <div className="pb-warning-banner">FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY - NOT FOR HUMAN CONSUMPTION - NOT MEDICAL ADVICE</div>
+      <div className="pb-warning-banner">⚠ FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY — NOT FOR HUMAN CONSUMPTION — NOT MEDICAL ADVICE</div>
       <header className="pb-header">
         <div className="pb-header-inner">
           <Link href="/" className="pb-brand">
@@ -97,6 +98,7 @@ export default function PeptideDetailView({ peptide }) {
                 <h2>Research References</h2>
                 <ReferenceList references={peptide.references} />
               </section>
+              <LiveResearchFeed peptideName={peptide.name} compact />
               <section className="pb-detail-section">
                 <h2>Warning Section</h2>
                 <div className="pb-warning-box" style={{ whiteSpace: "pre-line" }}>{peptide.warning}</div>
@@ -127,7 +129,6 @@ export default function PeptideDetailView({ peptide }) {
                 </div>
               </aside>
               <ReconstitutionCalculator />
-              <Glp1ConcentrationCalculator />
             </div>
           </div>
         </section>

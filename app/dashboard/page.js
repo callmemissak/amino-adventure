@@ -9,7 +9,7 @@ export const metadata = {
 export default function DashboardPage() {
   return (
     <div className="pb-shell">
-      <div className="pb-warning-banner">FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY - NOT FOR HUMAN CONSUMPTION - NOT MEDICAL ADVICE</div>
+      <div className="pb-warning-banner">⚠ FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY — NOT FOR HUMAN CONSUMPTION — NOT MEDICAL ADVICE</div>
       <header className="pb-header">
         <div className="pb-header-inner">
           <a href="/" className="pb-brand">

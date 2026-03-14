@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import PeptideCard from "@/components/peptabase/PeptideCard";
-import { Glp1ConcentrationCalculator, ReconstitutionCalculator } from "@/components/peptabase/Calculators";
+import { ReconstitutionCalculator } from "@/components/peptabase/Calculators";
+import LiveResearchFeed from "@/components/peptabase/LiveResearchFeed";
 import {
   buildComparisonEntries,
   buildHomeSections,
@@ -53,7 +54,7 @@ export default function PeptaBaseHome({ peptides }) {
 
   return (
     <div className="pb-shell">
-      <div className="pb-warning-banner">FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY - NOT FOR HUMAN CONSUMPTION - NOT MEDICAL ADVICE</div>
+      <div className="pb-warning-banner">⚠ FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY — NOT FOR HUMAN CONSUMPTION — NOT MEDICAL ADVICE</div>
       <header className="pb-header">
         <div className="pb-header-inner">
           <Link href="/" className="pb-brand">
@@ -62,6 +63,7 @@ export default function PeptaBaseHome({ peptides }) {
           </Link>
           <nav className="pb-nav">
             <a href="#database">Database</a>
+            <a href="#feed">Live Feed</a>
             <a href="#research">Research</a>
             <a href="#calculators">Calculators</a>
             <Link href="/dashboard">Dashboard</Link>
@@ -80,6 +82,7 @@ export default function PeptaBaseHome({ peptides }) {
             </p>
             <div className="pb-actions">
               <a href="#database" className="pb-button">Search peptides</a>
+              <a href="#feed" className="pb-button-secondary">Open live feed</a>
               <a href="#calculators" className="pb-button-secondary">Open calculators</a>
               <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
             </div>
@@ -148,18 +151,29 @@ export default function PeptaBaseHome({ peptides }) {
         {sectionCards("Featured Peptides", "High-priority entries ready for richer editorial content and linked calculators.", sections.featured)}
         {sectionCards("Latest Research", "Entries currently carrying the strongest reference footprint in the local catalog.", sections.latestResearch)}
 
+        <section id="feed" className="pb-section">
+          <div className="pb-section-head">
+            <div>
+              <h2 className="pb-section-title">Live Research Feed</h2>
+              <p className="pb-section-copy">
+                This restores the live-feed behavior from the earlier site while keeping the newer PeptaBase structure and styling.
+              </p>
+            </div>
+          </div>
+          <LiveResearchFeed />
+        </section>
+
         <section id="calculators" className="pb-section">
           <div className="pb-section-head">
             <div>
               <h2 className="pb-section-title">Calculator Tools</h2>
               <p className="pb-section-copy">
-                Reconstitution and GLP-1 concentration tools can be reused on both the homepage and individual peptide pages.
+                The reconstitution tool stays available on the homepage and individual peptide pages.
               </p>
             </div>
           </div>
           <div className="pb-tool-grid">
             <ReconstitutionCalculator />
-            <Glp1ConcentrationCalculator />
           </div>
         </section>
 
@@ -237,7 +251,7 @@ export default function PeptaBaseHome({ peptides }) {
           <div className="pb-card-grid">
             <div className="pb-card">
               <h3 className="pb-card-title">PubMed Research Feed</h3>
-              <p className="pb-body">The app architecture now has a dedicated section ready for peptide-filtered PubMed feed results with title, journal, year, and study links.</p>
+              <p className="pb-body">The live feed is back in the site experience and can be filtered into peptide-specific feeds on detail pages.</p>
             </div>
             <div className="pb-card">
               <h3 className="pb-card-title">Personal Research Library</h3>

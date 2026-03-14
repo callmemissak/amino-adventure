@@ -4,7 +4,7 @@ import { favoriteResearchers } from "@/lib/peptabase-data";
 export default function ResearchersPage() {
   return (
     <div className="pb-shell">
-      <div className="pb-warning-banner">FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY - NOT FOR HUMAN CONSUMPTION - NOT MEDICAL ADVICE</div>
+      <div className="pb-warning-banner">⚠ FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY — NOT FOR HUMAN CONSUMPTION — NOT MEDICAL ADVICE</div>
       <header className="pb-header">
         <div className="pb-header-inner">
           <Link href="/" className="pb-brand">

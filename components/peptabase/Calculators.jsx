@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { glp1Options } from "@/lib/peptabase-data";
 
 function round(value) {
   return Number.isFinite(value) ? Number(value.toFixed(2)) : 0;
@@ -60,69 +59,6 @@ export function ReconstitutionCalculator({ defaultDose = 250 }) {
         <div className="pb-fact-row"><strong>Dose:</strong> {result.desiredAmount}</div>
         <div className="pb-fact-row"><strong>Concentration:</strong> {result.concentrationMcgPerMl} mcg/ml</div>
         <div className="pb-fact-row"><strong>Volume per dose:</strong> {result.mlPerDose} ml</div>
-        <div className="pb-fact-row"><strong>Insulin syringe units:</strong> {result.insulinUnits} units</div>
-      </div>
-    </div>
-  );
-}
-
-export function Glp1ConcentrationCalculator() {
-  const [selected, setSelected] = useState(glp1Options[0].name);
-  const defaults = glp1Options.find((option) => option.name === selected) || glp1Options[0];
-  const [strengthMg, setStrengthMg] = useState(defaults.defaultStrengthMg);
-  const [volumeMl, setVolumeMl] = useState(defaults.defaultVolumeMl);
-  const [targetDoseMg, setTargetDoseMg] = useState(defaults.dosesMg[0]);
-
-  const result = useMemo(() => {
-    const concentration = volumeMl > 0 ? strengthMg / volumeMl : 0;
-    const mlPerDose = concentration > 0 ? targetDoseMg / concentration : 0;
-    return {
-      concentrationMgPerMl: round(concentration),
-      doseMl: round(mlPerDose),
-      insulinUnits: round(mlPerDose * 100)
-    };
-  }, [strengthMg, targetDoseMg, volumeMl]);
-
-  const handleSelection = (name) => {
-    const option = glp1Options.find((entry) => entry.name === name) || glp1Options[0];
-    setSelected(option.name);
-    setStrengthMg(option.defaultStrengthMg);
-    setVolumeMl(option.defaultVolumeMl);
-    setTargetDoseMg(option.dosesMg[0]);
-  };
-
-  return (
-    <div className="pb-tool">
-      <div className="pb-eyebrow">GLP-1 tools</div>
-      <h3 className="pb-card-title">GLP-1 Concentration Calculator</h3>
-      <p className="pb-form-help">
-        Supports Semaglutide, Tirzepatide, Retatrutide, and Cagrilintide style workflows.
-      </p>
-      <div className="pb-inline-grid">
-        <label>
-          <div className="pb-subtle">Compound</div>
-          <select className="pb-select" value={selected} onChange={(e) => handleSelection(e.target.value)}>
-            {glp1Options.map((option) => (
-              <option key={option.name} value={option.name}>{option.name}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <div className="pb-subtle">Vial strength (mg)</div>
-          <input className="pb-field" min="0" step="0.1" type="number" value={strengthMg} onChange={(e) => setStrengthMg(Number(e.target.value))} />
-        </label>
-        <label>
-          <div className="pb-subtle">Dilution volume (ml)</div>
-          <input className="pb-field" min="0" step="0.1" type="number" value={volumeMl} onChange={(e) => setVolumeMl(Number(e.target.value))} />
-        </label>
-        <label>
-          <div className="pb-subtle">Desired dose (mg)</div>
-          <input className="pb-field" min="0" step="0.1" type="number" value={targetDoseMg} onChange={(e) => setTargetDoseMg(Number(e.target.value))} />
-        </label>
-      </div>
-      <div className="pb-link-list" style={{ marginTop: 16 }}>
-        <div className="pb-fact-row"><strong>Concentration:</strong> {result.concentrationMgPerMl} mg/ml</div>
-        <div className="pb-fact-row"><strong>Volume per dose:</strong> {result.doseMl} ml</div>
         <div className="pb-fact-row"><strong>Insulin syringe units:</strong> {result.insulinUnits} units</div>
       </div>
     </div>
