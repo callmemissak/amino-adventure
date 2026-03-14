@@ -916,6 +916,11 @@ button {
   align-items: stretch;
 }
 
+.pb-quick-facts .pb-link-list {
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 12px;
+}
+
 .pb-citation-block {
   margin-top: 4px;
 }
@@ -990,6 +995,7 @@ button {
 
 .pb-stat-card {
   height: 100%;
+  min-height: 84px;
 }
 
 .pb-stat-card-compact {
@@ -1150,6 +1156,13 @@ button {
   font-size: 0.88rem;
 }
 
+.pb-quick-facts .pb-fact-row,
+.pb-review-block .pb-fact-row,
+.pb-evidence-stats .pb-fact-row {
+  padding: 12px 13px;
+  background: #fbfcfe;
+}
+
 .pb-footer {
   border-top: 1px solid var(--border);
   padding: 28px 0 42px;
@@ -1230,6 +1243,7 @@ button {
   }
 
   .pb-accordion-quick,
+  .pb-quick-facts .pb-link-list,
   .pb-review-block-grid,
   .pb-evidence-stats {
     grid-template-columns: 1fr;
