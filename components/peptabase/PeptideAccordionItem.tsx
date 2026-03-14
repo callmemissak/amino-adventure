@@ -181,7 +181,6 @@ export default function PeptideAccordionItem({
   comparisonLinks,
   stacks,
   evidenceLevel,
-  lastReviewedDate,
   calculatorHref
 }: {
   peptide: PeptideEntry;
@@ -191,7 +190,6 @@ export default function PeptideAccordionItem({
   comparisonLinks: LinkEntry[];
   stacks: StackEntry[];
   evidenceLevel: string;
-  lastReviewedDate: string;
   calculatorHref: string;
 }) {
   const [copied, setCopied] = useState(false);
@@ -257,11 +255,6 @@ export default function PeptideAccordionItem({
             <div className="pb-expanded-copy">
               <h3 className="pb-expanded-title">{peptide.name}</h3>
               <p className="pb-expanded-summary">{peptide.overview || peptide.mechanismSummary || peptide.mechanismOfAction || "Research summary coming soon."}</p>
-              <div className="pb-expanded-meta">
-                <span>{peptide.category || "Research peptide"}</span>
-                <span>{peptide.evidenceLevel || evidenceLevel}</span>
-                <span>Reviewed {peptide.reviewDate || lastReviewedDate}</span>
-              </div>
             </div>
           </div>
 
@@ -303,13 +296,6 @@ export default function PeptideAccordionItem({
               </SectionCard>
             </SectionDisclosure>
 
-            <SectionDisclosure title="Research Applications">
-              <SectionCard title="Research Applications">
-                <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
-                <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
-              </SectionCard>
-            </SectionDisclosure>
-
             <SectionDisclosure title="Studies">
               <SectionCard title="Studies" className="pb-section-card-wide">
                 <div className="pb-studies-header">
@@ -326,10 +312,6 @@ export default function PeptideAccordionItem({
                 ) : (
                   <div className="pb-empty">No direct source links are attached to this entry yet.</div>
                 )}
-                <div className="pb-live-feed-block">
-                  <div className="pb-section-block-title">Live PubMed Feed</div>
-                  <LiveResearchFeed peptideName={peptide.pubmedQuery || peptide.name} compact />
-                </div>
               </SectionCard>
             </SectionDisclosure>
 
@@ -381,6 +363,11 @@ export default function PeptideAccordionItem({
               </div>
 
               <div className="pb-secondary-grid">
+                <SectionCard title="Research Applications">
+                  <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
+                  <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
+                </SectionCard>
+
                 <SectionCard title="Keywords + Related Peptides">
                   <div className="pb-tag-row">
                     {keywordList.length > 0 ? keywordList.map((keyword) => <span key={keyword} className="pb-preview-tag">{keyword}</span>) : <span className="pb-body">No keywords added yet.</span>}
@@ -414,6 +401,10 @@ export default function PeptideAccordionItem({
                     </button>
                     <SavedPeptideButton slug={peptide.slug} name={peptide.name} />
                     <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
+                  </div>
+                  <div className="pb-live-feed-block">
+                    <div className="pb-section-block-title">Live PubMed Feed</div>
+                    <LiveResearchFeed peptideName={peptide.pubmedQuery || peptide.name} compact />
                   </div>
                 </SectionCard>
               </div>

@@ -304,7 +304,6 @@ export default function PeptaBaseHome({
                     comparisonLinks={comparisons}
                     stacks={stacks}
                     evidenceLevel={evidenceBySlug[peptide.slug] ?? "Limited"}
-                    lastReviewedDate={reviewedBySlug[peptide.slug] ?? "Mar 14, 2026"}
                     calculatorHref={calculatorHrefFor(peptide)}
                   />
                 );
