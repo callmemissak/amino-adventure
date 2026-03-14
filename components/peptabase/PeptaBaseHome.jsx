@@ -1,277 +1,175 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
-import PeptideCard from "@/components/peptabase/PeptideCard";
+import { useEffect, useMemo, useState } from "react";
 import { ReconstitutionCalculator } from "@/components/peptabase/Calculators";
-import LiveResearchFeed from "@/components/peptabase/LiveResearchFeed";
-import {
-  buildComparisonEntries,
-  buildHomeSections,
-  compareSuggestions,
-  getCategories,
-  peptideStacks
-} from "@/lib/peptabase-data";
+import PeptideAccordionItem from "@/components/peptabase/PeptideAccordionItem";
 
-function sectionCards(title, copy, items) {
-  return (
-    <section className="pb-section">
-      <div className="pb-section-head">
-        <div>
-          <h2 className="pb-section-title">{title}</h2>
-          <p className="pb-section-copy">{copy}</p>
-        </div>
-      </div>
-      <div className="pb-card-grid">
-        {items.map((peptide) => <PeptideCard key={peptide.slug} peptide={peptide} />)}
-      </div>
-    </section>
-  );
+const FILTER_GROUPS = [
+  { id: "all", label: "All", matcher: () => true },
+  { id: "healing", label: "Healing", matcher: (peptide) => peptide.category === "Healing & Recovery" },
+  { id: "gh", label: "GH / Growth Hormone", matcher: (peptide) => peptide.category === "Growth Hormone Secretagogue" || peptide.category === "Growth Factor" },
+  { id: "glp1", label: "GLP-1 / Metabolic", matcher: (peptide) => peptide.category === "Metabolic" },
+  { id: "neuro", label: "Neuro", matcher: (peptide) => peptide.category === "Nootropic & Neuropeptide" },
+  { id: "mitochondrial", label: "Mitochondrial", matcher: (peptide) => peptide.category === "Longevity & Mitochondrial" },
+  { id: "bioregulator", label: "Bioregulator", matcher: (peptide) => peptide.category === "Bioregulator Peptide" },
+  { id: "immune", label: "Immune", matcher: (peptide) => peptide.category === "Immune Modulation" }
+];
+
+function matchesSearch(peptide, query) {
+  const haystack = [
+    peptide.name,
+    peptide.category,
+    peptide.kind,
+    peptide.mechanismOfAction,
+    peptide.overview,
+    peptide.pubmedQuery,
+    ...(peptide.aliases ?? []),
+    ...(peptide.keywords ?? [])
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(query);
+}
+
+function countVisible(filters, peptides, query) {
+  return filters.reduce((counts, filter) => {
+    counts[filter.id] = peptides.filter((peptide) => {
+      const matchesGroup = filter.matcher(peptide);
+      const searchMatches = !query || matchesSearch(peptide, query);
+      return matchesGroup && searchMatches;
+    }).length;
+    return counts;
+  }, {});
 }
 
 export default function PeptaBaseHome({ peptides }) {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const categories = useMemo(() => getCategories(peptides), [peptides]);
-  const sections = useMemo(() => buildHomeSections(peptides), [peptides]);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [openSlug, setOpenSlug] = useState("");
 
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
+  const normalizedSearch = search.trim().toLowerCase();
+  const visibleCounts = useMemo(() => countVisible(FILTER_GROUPS, peptides, normalizedSearch), [normalizedSearch, peptides]);
+
+  const filteredPeptides = useMemo(() => {
+    const currentFilter = FILTER_GROUPS.find((filter) => filter.id === activeFilter) ?? FILTER_GROUPS[0];
+
     return peptides.filter((peptide) => {
-      const matchesCategory = category === "All" || peptide.category === category;
-      const matchesSearch = !query || peptide.keywords.some((keyword) => String(keyword).toLowerCase().includes(query));
-      return matchesCategory && matchesSearch;
+      const matchesGroup = currentFilter.matcher(peptide);
+      const searchMatches = !normalizedSearch || matchesSearch(peptide, normalizedSearch);
+      return matchesGroup && searchMatches;
     });
-  }, [category, peptides, search]);
+  }, [activeFilter, normalizedSearch, peptides]);
 
-  const [leftSlug, rightSlug] = compareSuggestions[0];
-  const [compareLeft, setCompareLeft] = useState(leftSlug);
-  const [compareRight, setCompareRight] = useState(rightSlug);
-  const comparison = useMemo(
-    () => buildComparisonEntries(peptides, compareLeft, compareRight),
-    [compareLeft, compareRight, peptides]
-  );
+  useEffect(() => {
+    if (!filteredPeptides.some((peptide) => peptide.slug === openSlug)) {
+      setOpenSlug(filteredPeptides[0]?.slug ?? "");
+    }
+  }, [filteredPeptides, openSlug]);
 
   return (
     <div className="pb-shell">
-      <div className="pb-warning-banner">⚠ FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY — NOT FOR HUMAN CONSUMPTION — NOT MEDICAL ADVICE</div>
+      <div className="pb-warning-banner">FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY - NOT FOR HUMAN CONSUMPTION - NOT MEDICAL ADVICE</div>
+
       <header className="pb-header">
-        <div className="pb-header-inner">
-          <Link href="/" className="pb-brand">
-            <span className="pb-brand-mark">Unified peptide and bioregulator system</span>
+        <div className="pb-header-inner pb-header-database">
+          <div className="pb-brand">
+            <span className="pb-brand-mark">Peptide and bioregulator research database</span>
             <span className="pb-brand-name">PeptaBase</span>
-          </Link>
-          <nav className="pb-nav">
-            <a href="#database">Database</a>
-            <a href="#feed">Live Feed</a>
-            <a href="#research">Research</a>
-            <a href="#calculators">Calculators</a>
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/favorite-researchers">Favorite Researchers</Link>
-          </nav>
+          </div>
+          <div className="pb-header-summary">
+            <span>{peptides.length} searchable entries</span>
+            <span>Inline PubMed studies</span>
+            <span>One-page research workflow</span>
+          </div>
         </div>
       </header>
 
       <main className="pb-main">
-        <section className="pb-section pb-hero">
-          <div>
-            <div className="pb-eyebrow">Peptide and Bioregulator Research Database</div>
-            <h1>PeptaBase</h1>
-            <p>
-              Search peptides, review scientific research, run peptide calculators and manage peptide inventory in one platform.
-            </p>
-            <div className="pb-actions">
-              <a href="#database" className="pb-button">Search peptides</a>
-              <a href="#feed" className="pb-button-secondary">Open live feed</a>
-              <a href="#calculators" className="pb-button-secondary">Open calculators</a>
-              <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
-            </div>
-            <div className="pb-stats">
-              <div className="pb-stat">
-                <div className="pb-stat-number">{peptides.length}</div>
-                <div className="pb-stat-label">Catalog entries</div>
-              </div>
-              <div className="pb-stat">
-                <div className="pb-stat-number">{categories.length - 1}</div>
-                <div className="pb-stat-label">Searchable categories</div>
-              </div>
-              <div className="pb-stat">
-                <div className="pb-stat-number">5</div>
-                <div className="pb-stat-label">Platform modes</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pb-panel pb-hero-panel">
-            <div className="pb-eyebrow">Platform purpose</div>
-            <div className="pb-link-list" style={{ marginTop: 16 }}>
-              <div className="pb-fact-row">Peptide research database</div>
-              <div className="pb-fact-row">Scientific research hub</div>
-              <div className="pb-fact-row">Calculator toolkit</div>
-              <div className="pb-fact-row">Personal peptide inventory manager</div>
-              <div className="pb-fact-row">Injection tracking system</div>
-            </div>
-            <p className="pb-body" style={{ marginTop: 18 }}>
-              The refactor keeps the existing Next.js structure but reorganizes it into reusable components and a shared data layer ready for Supabase-backed accounts, saved data, and future subscription controls.
-            </p>
-          </div>
-        </section>
-
-        <section id="database" className="pb-section">
-          <div className="pb-section-head">
+        <section className="pb-section pb-database-shell">
+          <div className="pb-database-intro">
             <div>
-              <h2 className="pb-section-title">Smart Search</h2>
+              <div className="pb-eyebrow">Research Database</div>
+              <h1 className="pb-database-title">Search peptides, scan details fast, and expand one record at a time.</h1>
               <p className="pb-section-copy">
-                Search by peptide name, category, mechanism, or keywords. Results return quick-reference cards with direct links into structured peptide pages.
+                The full peptide database now stays on one page with compact rows, inline expansion, category filters, and peptide-level PubMed studies.
               </p>
             </div>
+            <div className="pb-database-stats">
+              <div className="pb-stat">
+                <div className="pb-stat-number">{filteredPeptides.length}</div>
+                <div className="pb-stat-label">Visible results</div>
+              </div>
+              <div className="pb-stat">
+                <div className="pb-stat-number">{FILTER_GROUPS.length - 1}</div>
+                <div className="pb-stat-label">Filter groups</div>
+              </div>
+              <div className="pb-stat">
+                <div className="pb-stat-number">1</div>
+                <div className="pb-stat-label">Open row at a time</div>
+              </div>
+            </div>
           </div>
-          <div className="pb-panel">
-            <div className="pb-search-row">
+
+          <div className="pb-database-toolbar">
+            <div className="pb-search-frame">
+              <label className="pb-toolbar-label" htmlFor="peptide-search">Sticky Search</label>
               <input
-                className="pb-field"
+                id="peptide-search"
+                className="pb-field pb-search-field"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search peptide name, category, mechanism, or keywords"
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search name, alias, category, mechanism, or keyword"
               />
-              <select className="pb-select" value={category} onChange={(e) => setCategory(e.target.value)}>
-                {categories.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
             </div>
-            <div className="pb-results-meta">{filtered.length} results</div>
-            <div className="pb-card-grid">
-              {filtered.slice(0, 12).map((peptide) => <PeptideCard key={peptide.slug} peptide={peptide} />)}
+            <div className="pb-filter-row">
+              {FILTER_GROUPS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  className={`pb-pill ${activeFilter === filter.id ? "active" : ""}`}
+                  onClick={() => setActiveFilter(filter.id)}
+                >
+                  {filter.label}
+                  <span className="pb-filter-count">{visibleCounts[filter.id] ?? 0}</span>
+                </button>
+              ))}
             </div>
           </div>
-        </section>
 
-        {sectionCards("Trending Peptides", "A launch-ready trending module using reference density and featured weighting now, with room for page views and saves after Supabase metrics are connected.", sections.trending)}
-        {sectionCards("Featured Peptides", "High-priority entries ready for richer editorial content and linked calculators.", sections.featured)}
-        {sectionCards("Latest Research", "Entries currently carrying the strongest reference footprint in the local catalog.", sections.latestResearch)}
-
-        <section id="feed" className="pb-section">
-          <div className="pb-section-head">
-            <div>
-              <h2 className="pb-section-title">Live Research Feed</h2>
-              <p className="pb-section-copy">
-                This restores the live-feed behavior from the earlier site while keeping the newer PeptaBase structure and styling.
-              </p>
-            </div>
-          </div>
-          <LiveResearchFeed />
-        </section>
-
-        <section id="calculators" className="pb-section">
-          <div className="pb-section-head">
-            <div>
-              <h2 className="pb-section-title">Calculator Tools</h2>
-              <p className="pb-section-copy">
-                The reconstitution tool stays available on the homepage and individual peptide pages.
-              </p>
-            </div>
-          </div>
-          <div className="pb-tool-grid">
-            <ReconstitutionCalculator />
-          </div>
-        </section>
-
-        <section className="pb-section">
-          <div className="pb-section-head">
-            <div>
-              <h2 className="pb-section-title">Peptide Stacks</h2>
-              <p className="pb-section-copy">Structured stack entries are ready for editorial expansion, inventory planning, and saved dashboard workflows.</p>
-            </div>
-          </div>
-          <div className="pb-panel">
-            {peptideStacks.map((stack) => (
-              <div key={stack.name} className="pb-stack-row">
-                <div>
-                  <strong>{stack.name}</strong>
-                  <div className="pb-subtle">{stack.peptides.join(" + ")}</div>
+          <div className="pb-database-layout">
+            <div className="pb-accordion-list">
+              {filteredPeptides.map((peptide) => (
+                <PeptideAccordionItem
+                  key={peptide.slug}
+                  peptide={peptide}
+                  open={openSlug === peptide.slug}
+                  onToggle={() => setOpenSlug((current) => (current === peptide.slug ? "" : peptide.slug))}
+                />
+              ))}
+              {filteredPeptides.length === 0 ? (
+                <div className="pb-panel pb-empty-state">
+                  <div className="pb-eyebrow">No matches</div>
+                  <h2 className="pb-card-title">No peptides matched that search.</h2>
+                  <p className="pb-body">Try a broader keyword or switch back to the All filter to reopen the full database.</p>
                 </div>
-                <div className="pb-subtle">{stack.focus}</div>
-                <div className="pb-subtle">{stack.note}</div>
+              ) : null}
+            </div>
+
+            <aside className="pb-database-rail">
+              <div className="pb-panel">
+                <div className="pb-eyebrow">How to use</div>
+                <h2 className="pb-card-title">Built for scanning, not endless scrolling.</h2>
+                <p className="pb-body">
+                  Use search and filter chips to narrow the list, then open a peptide row to review structured details and live PubMed studies without leaving the page.
+                </p>
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="pb-section">
-          <div className="pb-section-head">
-            <div>
-              <h2 className="pb-section-title">Compare Peptides</h2>
-              <p className="pb-section-copy">Side-by-side comparison cards support examples like Semaglutide vs Tirzepatide, BPC-157 vs TB-500, and CJC-1295 vs Ipamorelin.</p>
-            </div>
-          </div>
-          <div className="pb-panel">
-            <div className="pb-inline-grid">
-              <label>
-                <div className="pb-subtle">Left peptide</div>
-                <select className="pb-select" value={compareLeft} onChange={(e) => setCompareLeft(e.target.value)}>
-                  {peptides.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
-                </select>
-              </label>
-              <label>
-                <div className="pb-subtle">Right peptide</div>
-                <select className="pb-select" value={compareRight} onChange={(e) => setCompareRight(e.target.value)}>
-                  {peptides.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
-                </select>
-              </label>
-            </div>
-            {comparison ? (
-              <div className="pb-side-by-side-list" style={{ marginTop: 18 }}>
-                <div className="pb-side-by-side-row">
-                  <div className="pb-fact-label">Field</div>
-                  <strong>{comparison.left.name}</strong>
-                  <strong>{comparison.right.name}</strong>
-                </div>
-                {comparison.rows.map(([label, left, right]) => (
-                  <div key={label} className="pb-side-by-side-row">
-                    <div className="pb-fact-label">{label}</div>
-                    <div>{left}</div>
-                    <div>{right}</div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </section>
-
-        {sectionCards("Recently Updated Peptides", "This panel is wired for future PubMed refresh automation and currently highlights entries already normalized into the new content model.", sections.recentlyUpdated)}
-
-        <section id="research" className="pb-section">
-          <div className="pb-section-head">
-            <div>
-              <h2 className="pb-section-title">Research Hub</h2>
-              <p className="pb-section-copy">Live PubMed integration, personal research library, and Favorite Researchers are surfaced as dedicated product areas instead of being buried inside one page.</p>
-            </div>
-          </div>
-          <div className="pb-card-grid">
-            <div className="pb-card">
-              <h3 className="pb-card-title">PubMed Research Feed</h3>
-              <p className="pb-body">The live feed is back in the site experience and can be filtered into peptide-specific feeds on detail pages.</p>
-            </div>
-            <div className="pb-card">
-              <h3 className="pb-card-title">Personal Research Library</h3>
-              <p className="pb-body">Saved peptides, inventory, injection logs, and bookmarked studies are grouped under the dashboard flow so future authentication and paywall rules can be layered cleanly.</p>
-            </div>
-            <div className="pb-card">
-              <h3 className="pb-card-title">Favorite Researchers</h3>
-              <p className="pb-body">A dedicated page is prepared for researcher photos, specialties, social links, and published work without mixing it into peptide detail pages.</p>
-              <Link href="/favorite-researchers" className="pb-button-secondary">Open page</Link>
-            </div>
+              <ReconstitutionCalculator />
+            </aside>
           </div>
         </section>
       </main>
-
-      <footer className="pb-footer">
-        <div className="pb-footer-inner">
-          <div>PeptaBase © 2026</div>
-          <div>Built for readable research workflows, calculator access, and future Supabase-backed accounts.</div>
-        </div>
-      </footer>
     </div>
   );
 }
