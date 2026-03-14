@@ -89,6 +89,13 @@ function calculatorHrefFor(peptide: PeptideEntry) {
   return peptide.category === "Metabolic" ? "/glp-1-dose-calculator" : "/reconstitution-calculator";
 }
 
+function getScrollOffset() {
+  const header = document.querySelector(".pb-header");
+  const headerHeight = header instanceof HTMLElement ? header.offsetHeight : 0;
+  const breathingRoom = window.innerWidth <= 720 ? 24 : 18;
+  return headerHeight + breathingRoom;
+}
+
 export default function PeptaBaseHome({
   peptides,
   initialSlug = "",
@@ -105,6 +112,19 @@ export default function PeptaBaseHome({
   const [activeFilter, setActiveFilter] = useState("all");
   const [openSlug, setOpenSlug] = useState(initialOpen);
   const deferredSearch = useDeferredValue(search.trim().toLowerCase());
+
+  useEffect(() => {
+    function syncScrollOffset() {
+      document.documentElement.style.setProperty("--pb-scroll-offset", `${getScrollOffset()}px`);
+    }
+
+    syncScrollOffset();
+    window.addEventListener("resize", syncScrollOffset);
+
+    return () => {
+      window.removeEventListener("resize", syncScrollOffset);
+    };
+  }, []);
 
   const visibleCounts = useMemo(() => countVisible(FILTER_GROUPS, peptides, deferredSearch), [deferredSearch, peptides]);
 
@@ -137,8 +157,14 @@ export default function PeptaBaseHome({
     }
 
     const frame = window.requestAnimationFrame(() => {
-      document.getElementById(`peptide-${openSlug}`)?.scrollIntoView({
-        block: "start",
+      const target = document.getElementById(`peptide-${openSlug}`);
+      if (!target) {
+        return;
+      }
+
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - getScrollOffset();
+      window.scrollTo({
+        top: Math.max(targetTop, 0),
         behavior: "smooth"
       });
     });

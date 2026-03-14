@@ -16,6 +16,7 @@
   --radius-md: 18px;
   --radius-sm: 12px;
   --container: 1180px;
+  --pb-scroll-offset: 108px;
 }
 
 * {
@@ -26,6 +27,7 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  scroll-padding-top: var(--pb-scroll-offset);
 }
 
 body {
@@ -558,6 +560,7 @@ button {
   background: linear-gradient(180deg, rgba(20, 26, 42, 0.95), rgba(12, 18, 31, 0.98));
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
   overflow: clip;
+  scroll-margin-top: var(--pb-scroll-offset);
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -637,6 +640,7 @@ button {
 
 .pb-accordion-panel {
   padding: 0 22px 22px;
+  scroll-margin-top: calc(var(--pb-scroll-offset) + 8px);
 }
 
 .pb-accordion-grid {
