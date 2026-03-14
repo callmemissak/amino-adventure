@@ -1,9 +1,10 @@
+import type { MetadataRoute } from "next";
 import { getComparisonIndex, loadPeptides } from "@/lib/peptide-server";
 import { absoluteUrl } from "@/lib/site-config";
 import { categoryPageDefinitions } from "@/lib/category-pages";
 import { comparisonPageDefinitions } from "@/lib/comparison-pages";
 
-export default async function sitemap() {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const peptides = await loadPeptides();
   const comparisons = getComparisonIndex(peptides);
   const staticRoutes = [

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
 function text(value: unknown, fallback = "") {
@@ -22,7 +23,7 @@ export function buildPageMetadata({
   description: string;
   path: string;
   image?: string;
-}) {
+}): Metadata {
   const canonical = absoluteUrl(path);
 
   return {
