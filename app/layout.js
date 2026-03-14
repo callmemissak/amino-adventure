@@ -1,6 +1,5 @@
 import "./globals.css";
 import ServiceWorkerRegistration from "./ServiceWorkerRegistration";
-import InstallPrompt from "./InstallPrompt";
 import StructuredData from "@/components/seo/StructuredData";
 import { organizationStructuredData, websiteStructuredData } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
@@ -54,7 +53,7 @@ export const viewport = {
   maximumScale: 5,
   minimumScale: 1,
   viewportFit: "cover",
-  themeColor: "#0A0F1C"
+  themeColor: "#F8FAFC"
 };
 
 export default function RootLayout({ children }) {
@@ -62,7 +61,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0A0F1C" />
+        <meta name="theme-color" content="#F8FAFC" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
         <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.svg" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.svg" />
@@ -71,14 +70,13 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="PeptaBase" />
         <meta name="apple-touch-startup-image" content="/icons/icon-512.svg" />
-        <meta name="msapplication-TileColor" content="#0A0F1C" />
+        <meta name="msapplication-TileColor" content="#F8FAFC" />
         <meta name="msapplication-TileImage" content="/icons/icon-144.svg" />
       </head>
       <body>
         <StructuredData data={[organizationStructuredData(), websiteStructuredData()]} />
         {children}
         <ServiceWorkerRegistration />
-        <InstallPrompt />
       </body>
     </html>
   );

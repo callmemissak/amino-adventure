@@ -160,7 +160,7 @@ export default function PeptideAccordionItem({
   const [copied, setCopied] = useState(false);
   const aliases = peptide.aliases?.length ? peptide.aliases.join(" | ") : "Not yet added";
   const keywordList = peptide.keywords?.length ? peptide.keywords : [];
-  const previewTags = [peptide.kind, ...keywordList.slice(0, 2)].filter(Boolean) as string[];
+  const previewTags = [peptide.kind, ...keywordList.slice(0, 1)].filter(Boolean) as string[];
   const researchGoals = peptide.commonResearchGoals?.length ? peptide.commonResearchGoals : peptide.researchApplications ?? [];
   const stackSynergies = peptide.stackSynergies?.length ? peptide.stackSynergies : [];
   const references = peptide.references?.filter((reference) => reference.url) ?? [];
