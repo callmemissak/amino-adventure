@@ -197,7 +197,6 @@ export default function PeptideAccordionItem({
   const [copied, setCopied] = useState(false);
   const aliases = peptide.aliases?.length ? peptide.aliases.join(" | ") : "Not yet added";
   const keywordList = peptide.keywords?.length ? peptide.keywords : [];
-  const previewTags = [peptide.kind, ...keywordList.slice(0, 1)].filter(Boolean) as string[];
   const researchGoals = peptide.commonResearchGoals?.length ? peptide.commonResearchGoals : peptide.researchApplications ?? [];
   const references = peptide.references?.filter((reference) => reference.url) ?? [];
 
@@ -228,9 +227,6 @@ export default function PeptideAccordionItem({
             </div>
             <p className="pb-accordion-summary">{peptide.overview || peptide.mechanismSummary || peptide.mechanismOfAction || "Research summary coming soon."}</p>
             <div className="pb-accordion-meta">
-              {previewTags.map((tag) => (
-                <span key={tag} className="pb-preview-tag">{tag}</span>
-              ))}
               <span className="pb-preview-tag">Evidence: {evidenceLevel}</span>
             </div>
           </div>
