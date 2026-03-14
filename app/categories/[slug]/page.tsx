@@ -75,17 +75,17 @@ export default async function CategoryPage({ params }: any) {
               <h2 className="pb-card-title">{peptide.name}</h2>
               <p className="pb-body">{peptide.overview || peptide.mechanismSummary || peptide.mechanismOfAction}</p>
               <div className="pb-link-list">
-                <div className="pb-fact-row">
+                <div className="pb-fact-row pb-stat-card">
                   <div className="pb-fact-label">Mechanism</div>
-                  <strong>{peptide.mechanismSummary || peptide.mechanismOfAction || "Pending"}</strong>
+                  <strong className="pb-stat-value">{peptide.mechanismSummary || peptide.mechanismOfAction || "Pending"}</strong>
                 </div>
-                <div className="pb-fact-row">
+                <div className="pb-fact-row pb-stat-card">
                   <div className="pb-fact-label">Typical Dose</div>
-                  <strong>{peptide.doseRange || "Pending"}</strong>
+                  <strong className="pb-stat-value">{peptide.doseRange || "Pending"}</strong>
                 </div>
-                <div className="pb-fact-row">
+                <div className="pb-fact-row pb-stat-card">
                   <div className="pb-fact-label">Evidence</div>
-                  <strong>{peptide.evidenceLevel || "Pending"}</strong>
+                  <strong className="pb-stat-value">{peptide.evidenceLevel || "Pending"}</strong>
                 </div>
               </div>
               <div className="pb-inline-actions">

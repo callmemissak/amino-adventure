@@ -343,10 +343,10 @@ button {
 }
 
 .pb-card {
-  padding: 18px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .pb-card:hover {
@@ -425,6 +425,7 @@ button {
 
 .pb-card-grid {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
 }
 
 .pb-tool-grid,
@@ -507,7 +508,22 @@ button {
 }
 
 .pb-utility-shell {
-  padding-top: 40px;
+  padding-top: 32px;
+}
+
+.pb-utility-header {
+  display: grid;
+  gap: 10px;
+  max-width: 72ch;
+}
+
+.pb-utility-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.pb-utility-links {
+  margin-bottom: 4px;
 }
 
 .pb-database-intro,
@@ -1038,6 +1054,11 @@ button {
   gap: 10px;
 }
 
+.pb-card .pb-link-list,
+.pb-panel .pb-link-list {
+  grid-template-columns: 1fr;
+}
+
 .pb-reference-item,
 .pb-side-by-side-row,
 .pb-fact-row,
@@ -1146,7 +1167,7 @@ button {
   gap: 12px;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--border);
-  padding: 12px 0;
+  padding: 14px 0;
 }
 
 .pb-stack-row:last-child {
@@ -1178,7 +1199,7 @@ button {
 
 .pb-detail-section,
 .pb-quick-facts {
-  padding: 22px;
+  padding: 18px;
 }
 
 .pb-detail-section h2,

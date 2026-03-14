@@ -59,9 +59,9 @@ export default function SavedPeptidesView({ peptides }: { peptides: PeptideEntry
           <h2 className="pb-card-title">{peptide.name}</h2>
           <p className="pb-body">{peptide.overview || peptide.mechanismSummary || "Saved for later review."}</p>
           <div className="pb-link-list">
-            <div className="pb-fact-row">
+            <div className="pb-fact-row pb-stat-card">
               <div className="pb-fact-label">Review date</div>
-              <strong>{peptide.reviewDate || "Pending"}</strong>
+              <strong className="pb-stat-value">{peptide.reviewDate || "Pending"}</strong>
             </div>
           </div>
           <div className="pb-inline-actions">
