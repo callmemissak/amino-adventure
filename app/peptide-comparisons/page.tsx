@@ -1,7 +1,7 @@
 import Link from "next/link";
 import UtilityPage from "@/components/peptabase/UtilityPage";
-import { getComparisonIndex, loadPeptides } from "@/lib/peptide-server";
 import { buildPageMetadata } from "@/lib/seo";
+import { comparisonPageDefinitions } from "@/lib/comparison-pages";
 
 export const metadata = buildPageMetadata({
   title: "Peptide Comparisons | PeptaBase",
@@ -11,8 +11,12 @@ export const metadata = buildPageMetadata({
 });
 
 export default async function PeptideComparisonsPage() {
-  const peptides = await loadPeptides();
-  const comparisons = getComparisonIndex(peptides);
+  const comparisons = comparisonPageDefinitions.map((definition) => ({
+    slug: definition.slug,
+    title: definition.title,
+    description: definition.overview,
+    href: `/compare/${definition.slug}`
+  }));
 
   return (
     <UtilityPage

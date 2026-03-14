@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import UtilityPage from "@/components/peptabase/UtilityPage";
 import StructuredData from "@/components/seo/StructuredData";
 import { findComparisonBySlug, getComparisonIndex, loadPeptides } from "@/lib/peptide-server";
 import { breadcrumbStructuredData, buildPageMetadata } from "@/lib/seo";
+import { getComparisonPageDefinition } from "@/lib/comparison-pages";
 
 export async function generateStaticParams() {
   const peptides = await loadPeptides();
@@ -11,6 +12,16 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: { comparison: string } }) {
+  const richComparison = getComparisonPageDefinition(params.comparison);
+
+  if (richComparison) {
+    return buildPageMetadata({
+      title: `${richComparison.title} | Compare Peptides | PeptaBase`,
+      description: richComparison.overview,
+      path: `/compare/${richComparison.slug}`
+    });
+  }
+
   const peptides = await loadPeptides();
   const comparison = findComparisonBySlug(peptides, params.comparison);
 
@@ -26,6 +37,10 @@ export async function generateMetadata({ params }: { params: { comparison: strin
 }
 
 export default async function ComparisonDetailPage({ params }: { params: { comparison: string } }) {
+  if (getComparisonPageDefinition(params.comparison)) {
+    redirect(`/compare/${params.comparison}`);
+  }
+
   const peptides = await loadPeptides();
   const comparison = findComparisonBySlug(peptides, params.comparison);
 
