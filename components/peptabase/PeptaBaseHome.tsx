@@ -224,9 +224,9 @@ export default function PeptaBaseHome({
           <div className="pb-database-intro">
             <div className="pb-database-copy">
               <div className="pb-eyebrow">Research Database</div>
-              <h1 className="pb-database-title">A cleaner peptide database built for scanning, trust, and depth.</h1>
+              <h1 className="pb-database-title">A Structured Database for Peptide and Bioregulator Research</h1>
               <p className="pb-section-copy">
-                Search by peptide, alias, category, mechanism, or keyword, then open one elegant inline record at a time without losing your place in the database.
+                Search by peptide, alias, category, mechanism, or keyword, then review one structured inline record at a time without losing your place in the database.
               </p>
               <div className="pb-inline-link-list pb-top-links">
                 {utilityLinks.map((link) => (
@@ -322,19 +322,19 @@ export default function PeptaBaseHome({
           <div className="pb-database-support">
             <div className="pb-panel pb-panel-soft">
               <div className="pb-eyebrow">Reading mode</div>
-              <h2 className="pb-card-title">The peptide entries stay first.</h2>
+              <h2 className="pb-card-title">Research entries remain the primary focus.</h2>
               <p className="pb-body">
-                Search, scan, and read the peptide records inline. Supporting tools stay available below without crowding the main reading flow.
+                Search, scan, and review peptide records inline. Supporting tools remain available below without interrupting the reading flow.
               </p>
             </div>
 
             <ReconstitutionCalculator />
 
             <div className="pb-panel pb-panel-soft">
-              <div className="pb-eyebrow">Premium workflows</div>
-              <h2 className="pb-card-title">Saved tracking, inventory, and protocol tools.</h2>
+              <div className="pb-eyebrow">Research Tools</div>
+              <h2 className="pb-card-title">Tracking, inventory, and saved workflow tools.</h2>
               <p className="pb-body">
-                Dashboard features remain available as optional secondary tools instead of competing with the peptide content.
+                Secondary tools remain available for research workflow support without competing with the core peptide content.
               </p>
               <div className="pb-inline-actions">
                 <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>

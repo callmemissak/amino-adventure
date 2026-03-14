@@ -21,7 +21,7 @@ export default function CalculatorPage() {
     <UtilityPage
       eyebrow="Calculator Hub"
       title="Research calculators for reconstitution and planning."
-      description="These tools support research workflows, dose planning, and inventory prep without disrupting the core peptide database experience."
+      description="These tools support peptide research workflows, solution planning, and inventory preparation without interrupting the core database experience."
       links={links}
     >
       <div className="pb-tool-grid">
@@ -31,13 +31,13 @@ export default function CalculatorPage() {
       <div className="pb-card-grid">
         <div className="pb-card">
           <h2 className="pb-card-title">Use calculators alongside the database.</h2>
-          <p className="pb-body">Every peptide entry links back to the most relevant utility page so the calculators act as research tools, not detached widgets.</p>
+          <p className="pb-body">Peptide entries link back to the most relevant utility routes so the calculators remain integrated research tools, not detached widgets.</p>
           <Link href="/" className="pb-button-secondary">Open peptide database</Link>
         </div>
         <div className="pb-card">
-          <h2 className="pb-card-title">Premium-ready workflow hooks.</h2>
-          <p className="pb-body">This calculator area is ready to support saved protocols, tracked inventory, and account-level personalization later.</p>
-          <Link href="/dashboard" className="pb-button-secondary">Open dashboard placeholder</Link>
+          <h2 className="pb-card-title">Workflow support</h2>
+          <p className="pb-body">This calculator area can support saved protocols, tracked inventory, and account-level research workflows as the platform expands.</p>
+          <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
         </div>
       </div>
     </UtilityPage>
