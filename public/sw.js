@@ -1,14 +1,9 @@
-// Peptide Atlas Service Worker
-const CACHE_NAME = "peptide-atlas-v1";
-const RUNTIME_CACHE = "peptide-atlas-runtime-v1";
+// PeptaBase Service Worker
+const CACHE_NAME = "peptabase-v1";
+const RUNTIME_CACHE = "peptabase-runtime-v1";
 
-// Core assets to pre-cache on install
-const PRECACHE_URLS = [
-  "/",
-  "/manifest.json",
-];
+const PRECACHE_URLS = ["/", "/manifest.json"];
 
-// Install: pre-cache core shell
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
@@ -18,36 +13,30 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate: clean up old caches
 self.addEventListener("activate", (event) => {
   const currentCaches = [CACHE_NAME, RUNTIME_CACHE];
   event.waitUntil(
     caches
       .keys()
-      .then((cacheNames) =>
-        cacheNames.filter((name) => !currentCaches.includes(name))
-      )
-      .then((toDelete) =>
-        Promise.all(toDelete.map((name) => caches.delete(name)))
-      )
+      .then((cacheNames) => cacheNames.filter((name) => !currentCaches.includes(name)))
+      .then((toDelete) => Promise.all(toDelete.map((name) => caches.delete(name))))
       .then(() => self.clients.claim())
   );
 });
 
-// Fetch strategy:
-// - Navigation requests: Network-first, fall back to cache, then offline page
-// - API requests: Network-first with cache fallback
-// - Static assets (_next/static, icons, fonts): Cache-first
-// - Everything else: Network-first
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET and cross-origin
   if (request.method !== "GET") return;
-  if (url.origin !== self.location.origin && !url.hostname.includes("fonts.googleapis.com") && !url.hostname.includes("fonts.gstatic.com")) return;
+  if (
+    url.origin !== self.location.origin &&
+    !url.hostname.includes("fonts.googleapis.com") &&
+    !url.hostname.includes("fonts.gstatic.com")
+  ) {
+    return;
+  }
 
-  // Google Fonts: cache-first (they never change once versioned)
   if (url.hostname.includes("fonts.googleapis.com") || url.hostname.includes("fonts.gstatic.com")) {
     event.respondWith(
       caches.open(RUNTIME_CACHE).then((cache) =>
@@ -63,7 +52,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static Next.js assets: cache-first
   if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/")) {
     event.respondWith(
       caches.open(RUNTIME_CACHE).then((cache) =>
@@ -79,7 +67,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // API requests: network-first with cache fallback
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(
       caches.open(RUNTIME_CACHE).then((cache) =>
@@ -94,7 +81,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigation / page requests: network-first
   if (request.mode === "navigate" || request.headers.get("accept")?.includes("text/html")) {
     event.respondWith(
       fetch(request)
@@ -106,11 +92,10 @@ self.addEventListener("fetch", (event) => {
         .catch(() =>
           caches.match(request).then((cached) => {
             if (cached) return cached;
-            // Fallback offline page
             return caches.match("/").then((home) => {
               if (home) return home;
               return new Response(offlineHTML(), {
-                headers: { "Content-Type": "text/html" },
+                headers: { "Content-Type": "text/html" }
               });
             });
           })
@@ -119,7 +104,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Everything else: network-first
   event.respondWith(
     fetch(request)
       .then((response) => {
@@ -139,20 +123,19 @@ function offlineHTML() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Peptide Atlas — Offline</title>
+  <title>PeptaBase - Offline</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@400&display=swap');
-    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#08080f; color:#e2ddd5; font-family:'Lato',sans-serif; }
+    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#0A0F1C; color:#E6EDF3; font-family:Georgia, serif; }
     .c { text-align:center; padding:40px; max-width:420px; }
-    h1 { font-family:'Playfair Display',serif; font-size:32px; margin-bottom:12px; }
-    p { color:rgba(226,221,213,0.5); font-size:14px; line-height:1.7; margin-bottom:24px; }
-    button { background:#e2ddd5; color:#08080f; border:none; padding:10px 24px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; border-radius:3px; cursor:pointer; }
+    h1 { font-size:32px; margin-bottom:12px; }
+    p { color:rgba(230,237,243,0.72); font-size:14px; line-height:1.7; margin-bottom:24px; }
+    button { background:#36E6D4; color:#031216; border:none; padding:10px 24px; font-family:"Courier New", monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; border-radius:999px; cursor:pointer; }
   </style>
 </head>
 <body>
   <div class="c">
     <h1>You're Offline</h1>
-    <p>Peptide Atlas requires an internet connection to load research data. Please check your connection and try again.</p>
+    <p>PeptaBase requires an internet connection to load live research and cloud-synced data. Please check your connection and try again.</p>
     <button onclick="window.location.reload()">Retry Connection</button>
   </div>
 </body>

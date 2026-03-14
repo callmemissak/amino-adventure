@@ -1,203 +1,100 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export default function Auth() {
   const [session, setSession] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
 
-  // Check if user is already logged in
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-    };
+    if (!supabase) return undefined;
 
-    checkSession();
-
-    // Subscribe to auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
     });
 
-    return () => subscription?.unsubscribe();
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+    });
+
+    return () => data.subscription?.unsubscribe();
   }, []);
 
-  const handleAuth = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="pb-link-list">
+        <div className="pb-eyebrow">Supabase setup required</div>
+        <h2 className="pb-card-title">Authentication is scaffolded and ready</h2>
+        <p className="pb-body">
+          Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and the service role key to enable account flows, saved data, and email capture.
+        </p>
+        <div className="pb-fact-row">Environment variables can be copied from `.env.example`, then connected to the Supabase tables included with this refactor.</div>
+      </div>
+    );
+  }
 
-    try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        setEmail("");
-        setPassword("");
-        alert("Signup successful! Check your email to confirm.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const handleAuth = async (event) => {
+    event.preventDefault();
+    if (!supabase) return;
+
+    setLoading(true);
+    setError("");
+
+    const operation = isSignUp
+      ? supabase.auth.signUp({ email, password })
+      : supabase.auth.signInWithPassword({ email, password });
+
+    const { error: authError } = await operation;
+    if (authError) {
+      setError(authError.message);
+    } else if (isSignUp) {
+      setEmail("");
+      setPassword("");
     }
+
+    setLoading(false);
   };
 
   const handleSignOut = async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
     setSession(null);
   };
 
   if (session) {
     return (
-      <div
-        style={{
-          padding: "16px",
-          marginBottom: "16px",
-          background: "#1a1a2e",
-          borderRadius: "8px",
-          border: "1px solid #34d399",
-        }}
-      >
-        <p style={{ margin: "0 0 12px 0", color: "#e2ddd5" }}>
-          Logged in as: <strong>{session.user.email}</strong>
-        </p>
-        <button
-          onClick={handleSignOut}
-          style={{
-            padding: "8px 16px",
-            background: "#ef4444",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          Sign Out
-        </button>
+      <div className="pb-link-list">
+        <div className="pb-eyebrow">Authenticated</div>
+        <h2 className="pb-card-title">Welcome back</h2>
+        <div className="pb-fact-row"><strong>Email:</strong> {session.user.email}</div>
+        <button className="pb-button-secondary" onClick={handleSignOut}>Sign out</button>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "0 auto",
-        padding: "16px",
-        background: "#1a1a2e",
-        borderRadius: "8px",
-        border: "1px solid #34d399",
-      }}
-    >
-      <h2 style={{ margin: "0 0 16px 0", color: "#e2ddd5" }}>
-        {isSignUp ? "Create Account" : "Login"}
-      </h2>
-
-      <form onSubmit={handleAuth}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{
-            width: "100%",
-            padding: "8px",
-            marginBottom: "12px",
-            background: "#0a0a10",
-            border: "1px solid #34d399",
-            color: "#e2ddd5",
-            borderRadius: "4px",
-            boxSizing: "border-box",
-          }}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{
-            width: "100%",
-            padding: "8px",
-            marginBottom: "12px",
-            background: "#0a0a10",
-            border: "1px solid #34d399",
-            color: "#e2ddd5",
-            borderRadius: "4px",
-            boxSizing: "border-box",
-          }}
-        />
-
-        {error && (
-          <p style={{ color: "#ef4444", fontSize: "12px", marginBottom: "12px" }}>
-            {error}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            background: "#34d399",
-            color: "#08080f",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-            fontWeight: "bold",
-            opacity: loading ? 0.6 : 1,
-          }}
-        >
-          {loading ? "Loading..." : isSignUp ? "Sign Up" : "Log In"}
+    <div>
+      <div className="pb-eyebrow">{isSignUp ? "Create account" : "Log in"}</div>
+      <h2 className="pb-card-title">{isSignUp ? "Start your PeptaBase workspace" : "Access your dashboard"}</h2>
+      <p className="pb-form-help">
+        Authentication is powered by Supabase and is ready for future subscription-gated dashboard features.
+      </p>
+      <form onSubmit={handleAuth} className="pb-link-list">
+        <input className="pb-field" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input className="pb-field" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        {error ? <div className="pb-warning-box">{error}</div> : null}
+        <button className="pb-button" type="submit" disabled={loading}>
+          {loading ? "Working..." : isSignUp ? "Create account" : "Log in"}
         </button>
       </form>
-
-      <p
-        style={{
-          textAlign: "center",
-          marginTop: "12px",
-          color: "#e2ddd5",
-          fontSize: "14px",
-        }}
-      >
-        {isSignUp ? "Already have an account?" : "Need an account?"}{" "}
-        <button
-          onClick={() => setIsSignUp(!isSignUp)}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#34d399",
-            cursor: "pointer",
-            textDecoration: "underline",
-            fontSize: "14px",
-          }}
-        >
-          {isSignUp ? "Log In" : "Sign Up"}
-        </button>
-      </p>
+      <button className="pb-button-secondary" style={{ marginTop: 12 }} onClick={() => setIsSignUp((value) => !value)}>
+        {isSignUp ? "Use existing account" : "Create a new account"}
+      </button>
     </div>
   );
 }

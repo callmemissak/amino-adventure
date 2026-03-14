@@ -121,7 +121,7 @@ export default function InstallPrompt() {
             marginBottom: 2,
           }}
         >
-          Install Peptide Atlas
+          Install PeptaBase
         </div>
         <div
           style={{

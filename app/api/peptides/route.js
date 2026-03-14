@@ -1,39 +1,26 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { mergePeptideData } from "@/lib/peptabase-data";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
-  const search = searchParams.get("search");
+  const search = searchParams.get("search")?.toLowerCase() || "";
 
-  const where = {};
-
-  if (category) {
-    where.category = category;
+  let records = [];
+  try {
+    records = await prisma.peptide.findMany({
+      orderBy: { name: "asc" }
+    });
+  } catch {
+    records = [];
   }
 
-  if (search) {
-    where.OR = [
-      { name: { contains: search } },
-      { aliases: { contains: search } },
-      { category: { contains: search } },
-      { mechanism_of_action: { contains: search } },
-      { research_applications: { contains: search } },
-    ];
-  }
-
-  const peptides = await prisma.peptide.findMany({
-    where,
-    orderBy: { name: "asc" },
+  const peptides = mergePeptideData(records).filter((entry) => {
+    const matchCategory = !category || category === "All" || entry.category === category;
+    const matchSearch = !search || entry.keywords.some((keyword) => String(keyword).toLowerCase().includes(search));
+    return matchCategory && matchSearch;
   });
 
-  // Parse JSON string fields for the response
-  const parsed = peptides.map((p) => ({
-    ...p,
-    aliases: JSON.parse(p.aliases || "[]"),
-    research_applications: JSON.parse(p.research_applications || "[]"),
-    pubmed_links: JSON.parse(p.pubmed_links || "[]"),
-  }));
-
-  return NextResponse.json(parsed);
+  return NextResponse.json(peptides);
 }

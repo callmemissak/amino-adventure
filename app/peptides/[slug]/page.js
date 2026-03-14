@@ -1,39 +1,44 @@
-import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
-import PeptideDetail from "./PeptideDetail";
+import prisma from "@/lib/db";
+import PeptideDetailView from "@/components/peptabase/PeptideDetailView";
+import { findPeptideBySlug, mergePeptideData } from "@/lib/peptabase-data";
+
+async function loadRecords() {
+  try {
+    return await prisma.peptide.findMany({
+      orderBy: { name: "asc" }
+    });
+  } catch {
+    return [];
+  }
+}
 
 export async function generateStaticParams() {
-  const peptides = await prisma.peptide.findMany({
-    select: { slug: true },
-  });
-  return peptides.map((p) => ({ slug: p.slug }));
+  const records = await loadRecords();
+  return mergePeptideData(records).map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generateMetadata({ params }) {
-  const { slug } = params;
-  const peptide = await prisma.peptide.findUnique({ where: { slug } });
-  if (!peptide) return { title: "Peptide Not Found" };
+  const records = await loadRecords();
+  const peptide = findPeptideBySlug(records, params.slug);
+
+  if (!peptide) {
+    return { title: "Peptide Not Found | PeptaBase" };
+  }
 
   return {
-    title: `${peptide.name} — Peptide Atlas`,
-    description: `Research data for ${peptide.name}: ${peptide.mechanism_of_action.slice(0, 150)}...`,
+    title: `${peptide.name} | PeptaBase`,
+    description: peptide.overview
   };
 }
 
 export default async function PeptidePage({ params }) {
-  const { slug } = params;
+  const records = await loadRecords();
+  const peptide = findPeptideBySlug(records, params.slug);
 
-  const peptide = await prisma.peptide.findUnique({ where: { slug } });
-  if (!peptide) notFound();
+  if (!peptide) {
+    notFound();
+  }
 
-  const parsed = {
-    ...peptide,
-    aliases: JSON.parse(peptide.aliases || "[]"),
-    research_applications: JSON.parse(peptide.research_applications || "[]"),
-    pubmed_links: JSON.parse(peptide.pubmed_links || "[]"),
-    createdAt: peptide.createdAt.toISOString(),
-    updatedAt: peptide.updatedAt.toISOString(),
-  };
-
-  return <PeptideDetail peptide={parsed} />;
+  return <PeptideDetailView peptide={peptide} />;
 }
