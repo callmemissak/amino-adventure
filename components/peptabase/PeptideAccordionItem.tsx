@@ -108,9 +108,11 @@ function CitationCard({ reference }: { reference: ReferenceEntry }) {
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="pb-fact-row">
+    <div className="pb-fact-row pb-stat-card">
       <div className="pb-fact-label">{label}</div>
-      <strong>{value}</strong>
+      <strong className="pb-stat-value" title={String(value)}>
+        {value}
+      </strong>
     </div>
   );
 }
@@ -204,14 +206,18 @@ export default function PeptideAccordionItem({
 
         <div className="pb-accordion-side">
           <div className="pb-accordion-quick">
-            <span>
+            <div className="pb-fact-row pb-stat-card pb-stat-card-compact">
               <span className="pb-fact-label">Dose</span>
-              <strong>{peptide.doseRange || "Pending"}</strong>
-            </span>
-            <span>
+              <strong className="pb-stat-value" title={peptide.doseRange || "Pending"}>
+                {peptide.doseRange || "Pending"}
+              </strong>
+            </div>
+            <div className="pb-fact-row pb-stat-card pb-stat-card-compact">
               <span className="pb-fact-label">Half-life</span>
-              <strong>{peptide.halfLife || "Pending"}</strong>
-            </span>
+              <strong className="pb-stat-value" title={peptide.halfLife || "Pending"}>
+                {peptide.halfLife || "Pending"}
+              </strong>
+            </div>
           </div>
           <span className="pb-accordion-toggle">{open ? "Collapse entry" : "Open entry"}</span>
         </div>
@@ -353,27 +359,39 @@ export default function PeptideAccordionItem({
                 <div className="pb-link-list">
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">Typical Dose</div>
-                    <strong>{peptide.quickFacts?.typicalDose || peptide.doseRange || "Pending"}</strong>
+                    <strong className="pb-stat-value" title={peptide.quickFacts?.typicalDose || peptide.doseRange || "Pending"}>
+                      {peptide.quickFacts?.typicalDose || peptide.doseRange || "Pending"}
+                    </strong>
                   </div>
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">Cycle</div>
-                    <strong>{peptide.quickFacts?.commonCycle || peptide.commonCycleLength || "Pending"}</strong>
+                    <strong className="pb-stat-value" title={peptide.quickFacts?.commonCycle || peptide.commonCycleLength || "Pending"}>
+                      {peptide.quickFacts?.commonCycle || peptide.commonCycleLength || "Pending"}
+                    </strong>
                   </div>
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">Half-life</div>
-                    <strong>{peptide.halfLife || "Pending"}</strong>
+                    <strong className="pb-stat-value" title={peptide.halfLife || "Pending"}>
+                      {peptide.halfLife || "Pending"}
+                    </strong>
                   </div>
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">Administration</div>
-                    <strong>{peptide.quickFacts?.administration || peptide.administration || "Pending"}</strong>
+                    <strong className="pb-stat-value" title={peptide.quickFacts?.administration || peptide.administration || "Pending"}>
+                      {peptide.quickFacts?.administration || peptide.administration || "Pending"}
+                    </strong>
                   </div>
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">FDA Status</div>
-                    <strong>{peptide.quickFacts?.fdaStatus || peptide.fdaStatus || "Pending"}</strong>
+                    <strong className="pb-stat-value" title={peptide.quickFacts?.fdaStatus || peptide.fdaStatus || "Pending"}>
+                      {peptide.quickFacts?.fdaStatus || peptide.fdaStatus || "Pending"}
+                    </strong>
                   </div>
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">Development Stage</div>
-                    <strong>{peptide.developmentStage || "Pending"}</strong>
+                    <strong className="pb-stat-value" title={peptide.developmentStage || "Pending"}>
+                      {peptide.developmentStage || "Pending"}
+                    </strong>
                   </div>
                 </div>
               </div>
