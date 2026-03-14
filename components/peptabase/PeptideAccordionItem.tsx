@@ -115,17 +115,21 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function SectionBlock({
+function SectionCard({
   title,
-  children
+  children,
+  className = ""
 }: {
   title: string;
   children: ReactNode;
+  className?: string;
 }) {
   return (
-    <section className="pb-section-block">
-      <div className="pb-section-block-title">{title}</div>
-      <div className="pb-section-block-grid">{children}</div>
+    <section className={`pb-section-card ${className}`.trim()}>
+      <div className="pb-section-card-head">
+        <div className="pb-section-block-title">{title}</div>
+      </div>
+      <div className="pb-section-card-grid">{children}</div>
     </section>
   );
 }
@@ -154,6 +158,7 @@ export default function PeptideAccordionItem({
   const [copied, setCopied] = useState(false);
   const aliases = peptide.aliases?.length ? peptide.aliases.join(" | ") : "Not yet added";
   const keywordList = peptide.keywords?.length ? peptide.keywords : [];
+  const previewTags = [peptide.kind, ...keywordList.slice(0, 2)].filter(Boolean) as string[];
   const researchGoals = peptide.commonResearchGoals?.length ? peptide.commonResearchGoals : peptide.researchApplications ?? [];
   const stackSynergies = peptide.stackSynergies?.length ? peptide.stackSynergies : [];
   const references = peptide.references?.filter((reference) => reference.url) ?? [];
@@ -163,7 +168,7 @@ export default function PeptideAccordionItem({
   );
 
   async function handleCopyLink() {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !navigator.clipboard) {
       return;
     }
 
@@ -183,15 +188,20 @@ export default function PeptideAccordionItem({
       >
         <div className="pb-accordion-main">
           <div className="pb-accordion-heading">
-            <h2 className="pb-accordion-title">{peptide.name}</h2>
-            <div className="pb-accordion-meta">
+            <div className="pb-accordion-title-row">
+              <h2 className="pb-accordion-title">{peptide.name}</h2>
               <span className="pb-chip">{peptide.category || "Uncategorized"}</span>
-              {peptide.kind ? <span className="pb-pill">{peptide.kind}</span> : null}
-              <span className="pb-pill">Evidence: {evidenceLevel}</span>
+            </div>
+            <p className="pb-accordion-summary">{peptide.overview || peptide.mechanismSummary || peptide.mechanismOfAction || "Research summary coming soon."}</p>
+            <div className="pb-accordion-meta">
+              {previewTags.map((tag) => (
+                <span key={tag} className="pb-preview-tag">{tag}</span>
+              ))}
+              <span className="pb-preview-tag">Evidence: {evidenceLevel}</span>
             </div>
           </div>
-          <p className="pb-accordion-summary">{peptide.overview || peptide.mechanismOfAction || "Research summary coming soon."}</p>
         </div>
+
         <div className="pb-accordion-side">
           <div className="pb-accordion-quick">
             <span>
@@ -202,170 +212,148 @@ export default function PeptideAccordionItem({
               <span className="pb-fact-label">Half-life</span>
               <strong>{peptide.halfLife || "Pending"}</strong>
             </span>
-            <span>
-              <span className="pb-fact-label">Reviewed</span>
-              <strong>{lastReviewedDate}</strong>
-            </span>
           </div>
-          <span className="pb-accordion-toggle">{open ? "Collapse" : "Expand"}</span>
+          <span className="pb-accordion-toggle">{open ? "Collapse entry" : "Open entry"}</span>
         </div>
       </button>
 
       {open ? (
         <div id={`peptide-panel-${peptide.slug}`} className="pb-accordion-panel">
-          <div className="pb-review-block">
-            <div className="pb-review-block-head">
-              <div>
-                <div className="pb-eyebrow">Research Review</div>
-                <h3 className="pb-card-title">Editorial review and evidence snapshot</h3>
+          <div className="pb-expanded-hero">
+            <div className="pb-expanded-copy">
+              <div className="pb-inline-link-list">
+                <span className="pb-chip">{peptide.category || "Research peptide"}</span>
+                {peptide.kind ? <span className="pb-pill">{peptide.kind}</span> : null}
+                <span className="pb-pill">{peptide.evidenceLevel || evidenceLevel}</span>
+              </div>
+              <h3 className="pb-expanded-title">{peptide.name}</h3>
+              <p className="pb-expanded-summary">{peptide.overview || peptide.mechanismSummary || peptide.mechanismOfAction || "Research summary coming soon."}</p>
+              <div className="pb-section-nav">
+                {["Overview", "Mechanism", "Dosing", "Evidence", "Studies"].map((label) => (
+                  <span key={label} className="pb-section-chip">{label}</span>
+                ))}
               </div>
             </div>
-            <div className="pb-review-block-grid">
-              <StatCard label="Reviewed By" value={peptide.reviewedBy || "PeptaBase editorial review"} />
-              <StatCard label="Review Date" value={peptide.reviewDate || lastReviewedDate} />
-              <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
-              <StatCard label="Citation Count" value={peptide.citationCount ?? references.length} />
-            </div>
-            <div className="pb-review-block-notes">
-              <div className="pb-fact-label">Revision Notes</div>
-              <div className="pb-body">{peptide.revisionNotes || "No revision notes have been added for this entry yet."}</div>
+
+            <div className="pb-review-block">
+              <div className="pb-review-block-head">
+                <div>
+                  <div className="pb-eyebrow">Research Review</div>
+                  <h3 className="pb-card-title">Editorial credibility snapshot</h3>
+                </div>
+              </div>
+              <div className="pb-review-block-grid">
+                <StatCard label="Reviewed By" value={peptide.reviewedBy || "PeptaBase editorial review"} />
+                <StatCard label="Review Date" value={peptide.reviewDate || lastReviewedDate} />
+                <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
+                <StatCard label="Citation Count" value={peptide.citationCount ?? references.length} />
+              </div>
+              <div className="pb-review-block-notes">
+                <div className="pb-fact-label">Revision Notes</div>
+                <div className="pb-body">{peptide.revisionNotes || "No revision notes have been added for this entry yet."}</div>
+              </div>
             </div>
           </div>
+
           <div className="pb-accordion-grid">
             <div className="pb-accordion-content">
-              <SectionBlock title="Mechanism">
-                <DetailBlock label="Overview" value={peptide.overview} />
-                <DetailBlock label="Mechanism Summary" value={peptide.mechanismSummary || peptide.mechanismOfAction} />
-                <DetailBlock label="Primary Receptor" value={peptide.primaryReceptor} />
-                <DetailBlock label="Mechanism of Action" value={peptide.mechanismOfAction} />
-              </SectionBlock>
+              <div className="pb-section-grid">
+                <SectionCard title="Overview">
+                  <DetailBlock label="Aliases" value={aliases} />
+                  <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
+                  <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
+                  <DetailBlock label="Keywords / Tags">
+                    <div className="pb-tag-row">
+                      {keywordList.length > 0 ? keywordList.map((keyword) => <span key={keyword} className="pb-preview-tag">{keyword}</span>) : "Not yet added"}
+                    </div>
+                  </DetailBlock>
+                </SectionCard>
 
-              <SectionBlock title="Biological Pathway">
-                <DetailBlock label="Biological Pathway" value={peptide.biologicalPathway} />
-                <DetailBlock label="Administration" value={peptide.administration} />
-                <DetailBlock label="Half-life" value={peptide.halfLife} />
-                <DetailBlock label="First Discovered Year" value={peptide.firstDiscoveredYear} />
-              </SectionBlock>
-
-              <SectionBlock title="Evidence">
-                <div className="pb-evidence-stats">
-                  <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
-                  <StatCard label="Citation Count" value={peptide.citationCount ?? references.length} />
-                  <StatCard label="Clinical Trials" value={peptide.clinicalTrialsCount ?? "0"} />
-                  <StatCard label="Animal Studies" value={peptide.animalStudiesCount ?? "0"} />
-                  <StatCard label="Mechanistic Studies" value={peptide.mechanisticStudiesCount ?? "0"} />
-                  <StatCard label="PubMed Links" value={pubmedReferences.length} />
-                </div>
-              </SectionBlock>
-
-              <SectionBlock title="Research Goals">
-                <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
-                <DetailBlock label="Stack Synergies" value={renderList(stackSynergies)} />
-                <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
-                <DetailBlock label="Aliases" value={aliases} />
-              </SectionBlock>
-
-              <SectionBlock title="Limitations">
-                <DetailBlock label="Known Limitations" value={peptide.knownLimitations} />
-                <DetailBlock label="Dose Range" value={peptide.doseRange} />
-                <DetailBlock label="Common Cycle Length" value={peptide.commonCycleLength} />
-                <DetailBlock label="Administration Notes" value={peptide.administrationNotes} />
-              </SectionBlock>
-
-              <SectionBlock title="Safety Notes">
-                <DetailBlock label="Safety Notes" value={peptide.safetyNotes} />
-                <DetailBlock label="FDA Status" value={peptide.fdaStatus} />
-                <DetailBlock label="Development Stage" value={peptide.developmentStage} />
-                <DetailBlock label="Break Before Continuing" value={peptide.breakBeforeContinuing} />
-              </SectionBlock>
-
-              <SectionBlock title="Editorial Review">
-                <DetailBlock label="Reviewed By" value={peptide.reviewedBy} />
-                <DetailBlock label="Review Date" value={peptide.reviewDate || lastReviewedDate} />
-                <DetailBlock label="Revision Notes" value={peptide.revisionNotes} />
-                <DetailBlock label="Keywords / Tags">
-                  <div className="pb-tag-row">
-                    {keywordList.length > 0 ? keywordList.map((keyword) => <span key={keyword} className="pb-pill">{keyword}</span>) : "Not yet added"}
-                  </div>
-                </DetailBlock>
-              </SectionBlock>
-
-              <div className="pb-detail-block pb-citation-block">
-                <div className="pb-fact-label">Citation Snapshot</div>
-                <div className="pb-link-list">
-                  <StatCard label="Last reviewed" value={peptide.reviewDate || lastReviewedDate} />
-                  <StatCard label="Evidence level" value={peptide.evidenceLevel || evidenceLevel} />
-                  <StatCard label="Source links" value={references.length} />
-                  <StatCard label="PubMed links" value={pubmedReferences.length} />
-                </div>
+                <SectionCard title="Mechanism">
+                  <DetailBlock label="Mechanism Summary" value={peptide.mechanismSummary || peptide.mechanismOfAction} />
+                  <DetailBlock label="Primary Receptor" value={peptide.primaryReceptor} />
+                  <DetailBlock label="Biological Pathway" value={peptide.biologicalPathway} />
+                  <DetailBlock label="First Discovered Year" value={peptide.firstDiscoveredYear} />
+                </SectionCard>
               </div>
 
-              {references.length > 0 ? (
-                <div className="pb-detail-block">
-                  <div className="pb-fact-label">Source Links</div>
+              <div className="pb-section-grid">
+                <SectionCard title="Dosing">
+                  <DetailBlock label="Dose Range" value={peptide.doseRange} />
+                  <DetailBlock label="Common Cycle Length" value={peptide.commonCycleLength} />
+                  <DetailBlock label="Break Before Continuing" value={peptide.breakBeforeContinuing} />
+                  <DetailBlock label="Administration" value={peptide.administration || peptide.administrationNotes} />
+                </SectionCard>
+
+                <SectionCard title="Evidence">
+                  <div className="pb-evidence-stats">
+                    <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
+                    <StatCard label="Clinical Trials" value={peptide.clinicalTrialsCount ?? "0"} />
+                    <StatCard label="Animal Studies" value={peptide.animalStudiesCount ?? "0"} />
+                    <StatCard label="Mechanistic Studies" value={peptide.mechanisticStudiesCount ?? "0"} />
+                  </div>
+                  <DetailBlock label="Known Limitations" value={peptide.knownLimitations} />
+                  <DetailBlock label="Safety Notes" value={peptide.safetyNotes} />
+                </SectionCard>
+              </div>
+
+              <SectionCard title="Studies" className="pb-section-card-wide">
+                <div className="pb-studies-header">
+                  <p className="pb-body">
+                    Direct source links and PubMed references stay visible here so each entry remains useful as a research record, not just a summary card.
+                  </p>
+                </div>
+                {references.length > 0 ? (
                   <div className="pb-reference-list">
                     {references.map((reference, index) => (
                       <CitationCard key={`${peptide.slug}-reference-${index}`} reference={reference} />
                     ))}
                   </div>
-                </div>
-              ) : null}
+                ) : (
+                  <div className="pb-empty">No direct source links are attached to this entry yet.</div>
+                )}
+              </SectionCard>
 
               <div className="pb-link-module-grid">
-                <div className="pb-detail-block">
-                  <div className="pb-fact-label">Related Peptides</div>
+                <SectionCard title="Related Peptides">
                   <div className="pb-inline-link-list">
-                    {relatedPeptides.map((entry) => (
+                    {relatedPeptides.length > 0 ? relatedPeptides.map((entry) => (
                       <Link key={entry.slug} href={`/peptides/${entry.slug}`} className="pb-inline-link">
                         {entry.name}
                       </Link>
-                    ))}
+                    )) : <span className="pb-body">No closely related entries are linked yet.</span>}
                   </div>
-                </div>
+                </SectionCard>
 
-                <div className="pb-detail-block">
-                  <div className="pb-fact-label">Compare Peptides</div>
+                <SectionCard title="Compare + Tools">
                   <div className="pb-inline-link-list">
                     {comparisonLinks.length > 0 ? comparisonLinks.map((link) => (
                       <Link key={link.href} href={link.href} className="pb-inline-link">
                         {link.label}
                       </Link>
-                    )) : <span className="pb-body">Comparison module coming soon.</span>}
-                  </div>
-                </div>
-              </div>
-
-              <div className="pb-link-module-grid">
-                <div className="pb-detail-block">
-                  <div className="pb-fact-label">Common Stacks</div>
-                  <div className="pb-inline-link-list">
-                    {stacks.length > 0 ? stacks.map((stack) => (
-                      <Link key={stack.name} href="/peptide-stacks" className="pb-inline-link">
-                        {stack.name}: {stack.focus}
-                      </Link>
-                    )) : <span className="pb-body">No stack templates are tied to this peptide yet.</span>}
-                  </div>
-                </div>
-
-                <div className="pb-detail-block">
-                  <div className="pb-fact-label">Calculator + Save Tools</div>
-                  <div className="pb-inline-link-list">
+                    )) : null}
                     <Link href={calculatorHref} className="pb-inline-link">Open matching calculator</Link>
-                    <Link href="/dashboard" className="pb-inline-link">Save to My Library</Link>
-                    <Link href="/dashboard" className="pb-inline-link">Bookmark or favorite</Link>
+                    <Link href="/saved-peptides" className="pb-inline-link">View saved peptides</Link>
                   </div>
-                </div>
+                </SectionCard>
               </div>
 
-              <div className="pb-inline-actions">
-                <button type="button" className="pb-button-secondary" onClick={handleCopyLink}>
-                  {copied ? "Link copied" : "Copy peptide link"}
-                </button>
-                <SavedPeptideButton slug={peptide.slug} name={peptide.name} />
-                <Link href="/dashboard" className="pb-button-secondary">Save in dashboard</Link>
-                <Link href="/saved-peptides" className="pb-button-secondary">View saved peptides</Link>
-                <Link href="/calculator" className="pb-button-secondary">Browse calculators</Link>
-              </div>
+              <SectionCard title="Stacks + Workflow">
+                <div className="pb-inline-link-list">
+                  {stacks.length > 0 ? stacks.map((stack) => (
+                    <Link key={stack.name} href="/peptide-stacks" className="pb-inline-link">
+                      {stack.name}: {stack.focus}
+                    </Link>
+                  )) : <span className="pb-body">No stack templates are tied to this peptide yet.</span>}
+                </div>
+                <div className="pb-inline-actions">
+                  <button type="button" className="pb-button-secondary" onClick={handleCopyLink}>
+                    {copied ? "Link copied" : "Copy peptide link"}
+                  </button>
+                  <SavedPeptideButton slug={peptide.slug} name={peptide.name} />
+                  <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
+                </div>
+              </SectionCard>
 
               <div className="pb-warning-box">
                 <strong>Educational &amp; Research Use Only.</strong>
@@ -380,20 +368,16 @@ export default function PeptideAccordionItem({
                 <h3 className="pb-card-title">Quick Facts</h3>
                 <div className="pb-link-list">
                   <div className="pb-fact-row">
-                    <div className="pb-fact-label">Category</div>
-                    <strong>{peptide.category || "Pending"}</strong>
-                  </div>
-                  <div className="pb-fact-row">
                     <div className="pb-fact-label">Typical Dose</div>
                     <strong>{peptide.quickFacts?.typicalDose || peptide.doseRange || "Pending"}</strong>
                   </div>
                   <div className="pb-fact-row">
-                    <div className="pb-fact-label">Common Cycle</div>
+                    <div className="pb-fact-label">Cycle</div>
                     <strong>{peptide.quickFacts?.commonCycle || peptide.commonCycleLength || "Pending"}</strong>
                   </div>
                   <div className="pb-fact-row">
-                    <div className="pb-fact-label">Break Duration</div>
-                    <strong>{peptide.quickFacts?.breakDuration || peptide.breakBeforeContinuing || "Pending"}</strong>
+                    <div className="pb-fact-label">Half-life</div>
+                    <strong>{peptide.halfLife || "Pending"}</strong>
                   </div>
                   <div className="pb-fact-row">
                     <div className="pb-fact-label">Administration</div>
@@ -403,16 +387,11 @@ export default function PeptideAccordionItem({
                     <div className="pb-fact-label">FDA Status</div>
                     <strong>{peptide.quickFacts?.fdaStatus || peptide.fdaStatus || "Pending"}</strong>
                   </div>
+                  <div className="pb-fact-row">
+                    <div className="pb-fact-label">Development Stage</div>
+                    <strong>{peptide.developmentStage || "Pending"}</strong>
+                  </div>
                 </div>
-              </div>
-
-              <div className="pb-panel">
-                <div className="pb-eyebrow">Premium workflows</div>
-                <h3 className="pb-card-title">Unlock saved protocols and advanced tracking.</h3>
-                <p className="pb-body">
-                  Future paid tools can layer in saved inventory, injection logs, advanced protocol tracking, and deeper research collections without changing this database experience.
-                </p>
-                <Link href="/dashboard" className="pb-button-secondary">Open account tools</Link>
               </div>
 
               <LiveResearchFeed peptideName={peptide.pubmedQuery || peptide.name} compact />

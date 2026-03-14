@@ -54,18 +54,13 @@ const FILTER_GROUPS = [
 
 const utilityLinks = [
   { href: "/calculator", label: "Calculator hub" },
-  { href: "/reconstitution-calculator", label: "Reconstitution calculator" },
-  { href: "/glp-1-dose-calculator", label: "GLP-1 dose planner" },
-  { href: "/peptide-comparisons", label: "Peptide comparisons" },
+  { href: "/peptide-comparisons", label: "Compare peptides" },
   { href: "/peptide-stacks", label: "Peptide stacks" },
   { href: "/research-glossary", label: "Research glossary" },
   { href: "/saved-peptides", label: "Saved peptides" },
-  { href: "/categories/healing", label: "Healing peptides" },
-  { href: "/categories/glp-1", label: "GLP-1 category" },
-  { href: "/categories/gh-secretagogues", label: "GH secretagogues" },
-  { href: "/categories/neuropeptides", label: "Neuropeptides" },
-  { href: "/categories/mitochondrial", label: "Mitochondrial peptides" },
-  { href: "/categories/bioregulators", label: "Bioregulators" }
+  { href: "/categories/healing", label: "Healing" },
+  { href: "/categories/glp-1", label: "GLP-1" },
+  { href: "/categories/gh-secretagogues", label: "GH secretagogues" }
 ];
 
 function matchesSearch(peptide: PeptideEntry, query: string) {
@@ -96,11 +91,16 @@ function calculatorHrefFor(peptide: PeptideEntry) {
   return peptide.category === "Metabolic" ? "/glp-1-dose-calculator" : "/reconstitution-calculator";
 }
 
-function getScrollOffset() {
+function updateChromeOffsets() {
   const header = document.querySelector(".pb-header");
+  const toolbar = document.querySelector(".pb-database-toolbar");
   const headerHeight = header instanceof HTMLElement ? header.offsetHeight : 0;
-  const breathingRoom = window.innerWidth <= 720 ? 24 : 18;
-  return headerHeight + breathingRoom;
+  const toolbarHeight = toolbar instanceof HTMLElement ? toolbar.offsetHeight : 0;
+  const breathingRoom = window.innerWidth <= 720 ? 18 : 22;
+
+  document.documentElement.style.setProperty("--pb-header-height", `${headerHeight}px`);
+  document.documentElement.style.setProperty("--pb-toolbar-height", `${toolbarHeight}px`);
+  document.documentElement.style.setProperty("--pb-scroll-offset", `${headerHeight + toolbarHeight + breathingRoom}px`);
 }
 
 export default function PeptaBaseHome({
@@ -118,20 +118,30 @@ export default function PeptaBaseHome({
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [openSlug, setOpenSlug] = useState(initialOpen);
+  const [isCondensed, setIsCondensed] = useState(false);
   const deferredSearch = useDeferredValue(search.trim().toLowerCase());
 
   useEffect(() => {
-    function syncScrollOffset() {
-      document.documentElement.style.setProperty("--pb-scroll-offset", `${getScrollOffset()}px`);
-    }
+    const syncChrome = () => {
+      const nextCondensed = window.scrollY > 52;
+      setIsCondensed((current) => (current === nextCondensed ? current : nextCondensed));
+      updateChromeOffsets();
+    };
 
-    syncScrollOffset();
-    window.addEventListener("resize", syncScrollOffset);
+    syncChrome();
+    window.addEventListener("resize", syncChrome);
+    window.addEventListener("scroll", syncChrome, { passive: true });
 
     return () => {
-      window.removeEventListener("resize", syncScrollOffset);
+      window.removeEventListener("resize", syncChrome);
+      window.removeEventListener("scroll", syncChrome);
     };
   }, []);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => updateChromeOffsets());
+    return () => window.cancelAnimationFrame(frame);
+  }, [isCondensed, filteredLength(activeFilter, deferredSearch, peptides)]);
 
   const visibleCounts = useMemo(() => countVisible(FILTER_GROUPS, peptides, deferredSearch), [deferredSearch, peptides]);
 
@@ -169,7 +179,7 @@ export default function PeptaBaseHome({
         return;
       }
 
-      const targetTop = target.getBoundingClientRect().top + window.scrollY - getScrollOffset();
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--pb-scroll-offset"), 10);
       window.scrollTo({
         top: Math.max(targetTop, 0),
         behavior: "smooth"
@@ -195,16 +205,16 @@ export default function PeptaBaseHome({
     <div className="pb-shell">
       <div className="pb-warning-banner">FOR EDUCATIONAL &amp; RESEARCH PURPOSES ONLY - NOT FOR HUMAN CONSUMPTION - NOT MEDICAL ADVICE</div>
 
-      <header className="pb-header">
+      <header className={`pb-header ${isCondensed ? "is-condensed" : ""}`}>
         <div className="pb-header-inner pb-header-database">
           <div className="pb-brand">
             <span className="pb-brand-mark">Peptide and bioregulator research database</span>
             <span className="pb-brand-name">PeptaBase</span>
           </div>
           <div className="pb-header-summary">
-            <span>{peptides.length} searchable entries</span>
-            <span>Deep-linkable peptide URLs</span>
-            <span>Inline PubMed studies</span>
+            <span className="pb-header-summary-pill">{filteredPeptides.length} visible</span>
+            <span className="pb-header-summary-pill">{peptides.length} total entries</span>
+            <span className="pb-header-summary-pill">Inline PubMed studies</span>
           </div>
         </div>
       </header>
@@ -212,11 +222,11 @@ export default function PeptaBaseHome({
       <main className="pb-main">
         <section className="pb-section pb-database-shell">
           <div className="pb-database-intro">
-            <div>
+            <div className="pb-database-copy">
               <div className="pb-eyebrow">Research Database</div>
-              <h1 className="pb-database-title">Search peptides, verify sources, and open any entry inline.</h1>
+              <h1 className="pb-database-title">A cleaner peptide database built for scanning, trust, and depth.</h1>
               <p className="pb-section-copy">
-                PeptaBase keeps the database experience on one page while adding shareable peptide URLs, direct citations, comparison routes, calculator pages, and stronger internal linking for research discovery.
+                Search by peptide, alias, category, mechanism, or keyword, then open one elegant inline record at a time without losing your place in the database.
               </p>
               <div className="pb-inline-link-list pb-top-links">
                 {utilityLinks.map((link) => (
@@ -227,31 +237,33 @@ export default function PeptaBaseHome({
               </div>
             </div>
             <div className="pb-database-stats">
-              <div className="pb-stat">
+              <div className="pb-stat pb-stat-soft">
                 <div className="pb-stat-number">{filteredPeptides.length}</div>
-                <div className="pb-stat-label">Visible results</div>
+                <div className="pb-stat-label">Visible entries</div>
               </div>
-              <div className="pb-stat">
-                <div className="pb-stat-number">{FILTER_GROUPS.length - 1}</div>
-                <div className="pb-stat-label">Research filters</div>
-              </div>
-              <div className="pb-stat">
+              <div className="pb-stat pb-stat-soft">
                 <div className="pb-stat-number">{comparisonIndex.length}</div>
-                <div className="pb-stat-label">Comparison routes</div>
+                <div className="pb-stat-label">Comparison pages</div>
               </div>
             </div>
           </div>
 
-          <div className="pb-database-toolbar">
-            <div className="pb-search-frame">
-              <label className="pb-toolbar-label" htmlFor="peptide-search">Sticky Search</label>
-              <input
-                id="peptide-search"
-                className="pb-field pb-search-field"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search name, alias, category, mechanism, or keyword"
-              />
+          <div className={`pb-database-toolbar ${isCondensed ? "is-condensed" : ""}`}>
+            <div className="pb-toolbar-top">
+              <div className="pb-search-frame">
+                <label className="pb-toolbar-label" htmlFor="peptide-search">Search Peptides</label>
+                <input
+                  id="peptide-search"
+                  className="pb-field pb-search-field"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search name, alias, category, mechanism, or keyword"
+                />
+              </div>
+              <div className="pb-toolbar-meta">
+                <span className="pb-results-pill">{filteredPeptides.length} results</span>
+                <Link href="/saved-peptides" className="pb-inline-link">Saved list</Link>
+              </div>
             </div>
             <div className="pb-filter-row">
               {FILTER_GROUPS.map((filter) => (
@@ -270,6 +282,10 @@ export default function PeptaBaseHome({
 
           <div className="pb-database-layout">
             <div className="pb-accordion-list">
+              <div className="pb-results-meta">
+                Showing <strong>{filteredPeptides.length}</strong> peptide entries in a single searchable research view.
+              </div>
+
               {filteredPeptides.map((peptide) => {
                 const comparisons = comparisonIndex
                   .filter((entry) => entry.left.slug === peptide.slug || entry.right.slug === peptide.slug)
@@ -298,46 +314,31 @@ export default function PeptaBaseHome({
                 <div className="pb-panel pb-empty-state">
                   <div className="pb-eyebrow">No matches</div>
                   <h2 className="pb-card-title">No peptides matched that search.</h2>
-                  <p className="pb-body">Try a broader keyword, change the category filter, or use one of the comparison and calculator routes above.</p>
+                  <p className="pb-body">Try a broader keyword, change the category filter, or use one of the linked comparison and glossary routes above.</p>
                 </div>
               ) : null}
             </div>
 
             <aside className="pb-database-rail">
-              <div className="pb-panel">
-                <div className="pb-eyebrow">Research workflow</div>
-                <h2 className="pb-card-title">Built for credibility, scanning, and conversion.</h2>
+              <div className="pb-panel pb-panel-soft">
+                <div className="pb-eyebrow">Reading mode</div>
+                <h2 className="pb-card-title">Built to feel like a polished research tool.</h2>
                 <p className="pb-body">
-                  Deep links, citations, comparison routes, glossary content, and calculator pages all support better discovery while preserving the single-page peptide database feel.
+                  Cleaner collapsed cards, lighter metadata, deeper inline sections, and shareable peptide links keep the interface useful without feeling cramped.
                 </p>
               </div>
 
               <ReconstitutionCalculator />
 
-              <div className="pb-panel">
-                <div className="pb-eyebrow">Premium CTA</div>
-                <h2 className="pb-card-title">Advanced tracking and saved protocols.</h2>
+              <div className="pb-panel pb-panel-soft">
+                <div className="pb-eyebrow">Premium workflows</div>
+                <h2 className="pb-card-title">Saved tracking, inventory, and protocol tools.</h2>
                 <p className="pb-body">
-                  Add account-linked saved protocols, personal inventory, injection logs, and research alerts behind a premium layer when you are ready.
+                  The database stays open and readable while premium-ready dashboard features stay available as secondary tools.
                 </p>
                 <div className="pb-inline-actions">
-                  <Link href="/dashboard" className="pb-button-secondary">Account placeholder</Link>
-                  <Link href="/dashboard" className="pb-button-secondary">Saved inventory</Link>
-                </div>
-              </div>
-
-              <div className="pb-panel">
-                <div className="pb-eyebrow">Email updates</div>
-                <h2 className="pb-card-title">Get notified when new peptides and citations are added.</h2>
-                <p className="pb-body">
-                  This module is ready to connect to Supabase email capture later without changing the layout.
-                </p>
-                <div className="pb-inline-grid">
-                  <label>
-                    <div className="pb-subtle">Email</div>
-                    <input className="pb-field" type="email" placeholder="researcher@example.com" />
-                  </label>
-                  <button type="button" className="pb-button-secondary">Join updates list</button>
+                  <Link href="/dashboard" className="pb-button-secondary">Open dashboard</Link>
+                  <Link href="/saved-peptides" className="pb-button-secondary">Saved peptides</Link>
                 </div>
               </div>
             </aside>
@@ -346,4 +347,9 @@ export default function PeptaBaseHome({
       </main>
     </div>
   );
+}
+
+function filteredLength(activeFilter: string, query: string, peptides: PeptideEntry[]) {
+  const currentFilter = FILTER_GROUPS.find((filter) => filter.id === activeFilter) ?? FILTER_GROUPS[0];
+  return peptides.filter((peptide) => currentFilter.matcher(peptide) && (!query || matchesSearch(peptide, query))).length;
 }
