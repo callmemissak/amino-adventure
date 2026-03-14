@@ -1,16 +1,16 @@
 :root {
-  --bg: #f5f7fb;
+  --bg: #eef2f7;
   --bg-elevated: #ffffff;
   --bg-muted: #f8fafc;
-  --border: #e2e8f0;
-  --border-strong: #bfdbfe;
+  --border: #d8dee9;
+  --border-strong: #c7d2e3;
   --text: #1f2937;
-  --text-muted: #475569;
-  --text-soft: #64748b;
-  --primary: #2563eb;
-  --secondary: #2563eb;
+  --text-muted: #4b5563;
+  --text-soft: #6b7280;
+  --primary: #1e40af;
+  --secondary: #1e40af;
   --primary-hover: #1d4ed8;
-  --accent-bg: #eff6ff;
+  --accent-bg: #eef4ff;
   --warning: #ffc857;
   --danger: #ff8b8b;
   --shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
@@ -464,8 +464,8 @@ button {
 
 .pb-pill.active {
   color: var(--primary);
-  background: #f4f8ff;
-  border-color: #bfdbfe;
+  background: #edf3ff;
+  border-color: var(--border-strong);
 }
 
 .pb-tag {
@@ -489,8 +489,8 @@ button {
 .pb-select:focus,
 .pb-textarea:focus {
   outline: none;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.08);
 }
 
 .pb-textarea {
@@ -1031,8 +1031,8 @@ button {
 }
 
 .pb-inline-link:hover {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: #eef4ff;
+  border-color: var(--border-strong);
   transform: none;
 }
 
@@ -1114,7 +1114,7 @@ button {
   top: 4px;
   bottom: 4px;
   width: 2px;
-  background: #bfdbfe;
+  background: #c7d2e3;
 }
 
 .pb-timeline-item {
@@ -1127,7 +1127,7 @@ button {
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: radial-gradient(circle, var(--primary) 0 35%, #dbeafe 36% 100%);
+  background: radial-gradient(circle, var(--primary) 0 35%, #dbe7f7 36% 100%);
   position: relative;
   z-index: 1;
 }
@@ -1279,7 +1279,7 @@ button {
 
 .pb-site-button.active,
 .pb-tab-button.active {
-  border-color: #93c5fd;
+  border-color: var(--border-strong);
   background: var(--accent-bg);
   color: var(--primary);
 }
