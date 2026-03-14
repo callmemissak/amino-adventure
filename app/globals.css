@@ -105,7 +105,7 @@ button {
 }
 
 .pb-header-database {
-  align-items: end;
+  align-items: flex-end;
 }
 
 .pb-brand {
@@ -347,7 +347,7 @@ button {
 .pb-section-head {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: flex-end;
   gap: 16px;
   margin-bottom: 18px;
 }
@@ -474,7 +474,7 @@ button {
 
 .pb-database-intro {
   grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.9fr);
-  align-items: end;
+  align-items: flex-end;
   margin-bottom: 24px;
 }
 
