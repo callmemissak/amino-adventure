@@ -1,5 +1,6 @@
 import { getComparisonIndex, loadPeptides } from "@/lib/peptide-server";
 import { absoluteUrl } from "@/lib/site-config";
+import { categoryPageDefinitions } from "@/lib/category-pages";
 
 export default async function sitemap() {
   const peptides = await loadPeptides();
@@ -9,6 +10,7 @@ export default async function sitemap() {
     "/calculator",
     "/reconstitution-calculator",
     "/glp-1-dose-calculator",
+    ...categoryPageDefinitions.map((entry) => `/categories/${entry.slug}`),
     "/peptide-comparisons",
     "/peptide-stacks",
     "/research-glossary",

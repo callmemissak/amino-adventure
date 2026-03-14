@@ -58,7 +58,13 @@ const utilityLinks = [
   { href: "/glp-1-dose-calculator", label: "GLP-1 dose planner" },
   { href: "/peptide-comparisons", label: "Peptide comparisons" },
   { href: "/peptide-stacks", label: "Peptide stacks" },
-  { href: "/research-glossary", label: "Research glossary" }
+  { href: "/research-glossary", label: "Research glossary" },
+  { href: "/categories/healing", label: "Healing peptides" },
+  { href: "/categories/glp-1", label: "GLP-1 category" },
+  { href: "/categories/gh-secretagogues", label: "GH secretagogues" },
+  { href: "/categories/neuropeptides", label: "Neuropeptides" },
+  { href: "/categories/mitochondrial", label: "Mitochondrial peptides" },
+  { href: "/categories/bioregulators", label: "Bioregulators" }
 ];
 
 function matchesSearch(peptide: PeptideEntry, query: string) {
