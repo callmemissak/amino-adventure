@@ -1,8 +1,12 @@
 import "./globals.css";
 import ServiceWorkerRegistration from "./ServiceWorkerRegistration";
 import InstallPrompt from "./InstallPrompt";
+import StructuredData from "@/components/seo/StructuredData";
+import { organizationStructuredData, websiteStructuredData } from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: "PeptaBase | Peptide and Bioregulator Research Database",
   description:
     "Search peptides, review scientific research, run peptide calculators, and manage inventory in one research-focused platform.",
@@ -71,6 +75,7 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileImage" content="/icons/icon-144.svg" />
       </head>
       <body>
+        <StructuredData data={[organizationStructuredData(), websiteStructuredData()]} />
         {children}
         <ServiceWorkerRegistration />
         <InstallPrompt />

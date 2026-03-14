@@ -452,6 +452,10 @@ button {
   padding-top: 28px;
 }
 
+.pb-utility-shell {
+  padding-top: 40px;
+}
+
 .pb-database-intro,
 .pb-database-layout,
 .pb-filter-row,
@@ -459,7 +463,9 @@ button {
 .pb-accordion-meta,
 .pb-accordion-quick,
 .pb-accordion-grid,
-.pb-tag-row {
+.pb-tag-row,
+.pb-link-module-grid,
+.pb-utility-content {
   display: grid;
   gap: 16px;
 }
@@ -501,6 +507,10 @@ button {
 
 .pb-search-frame {
   margin-bottom: 16px;
+}
+
+.pb-top-links {
+  margin-top: 18px;
 }
 
 .pb-search-field {
@@ -645,6 +655,35 @@ button {
   border-radius: 18px;
   background: rgba(230, 237, 243, 0.03);
   border: 1px solid rgba(230, 237, 243, 0.08);
+}
+
+.pb-link-module-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pb-inline-link-list,
+.pb-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pb-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(54, 230, 212, 0.18);
+  background: rgba(54, 230, 212, 0.08);
+  color: var(--secondary);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.pb-inline-link:hover {
+  background: rgba(54, 230, 212, 0.14);
+  border-color: rgba(54, 230, 212, 0.3);
+  transform: translateY(-1px);
 }
 
 .pb-empty-state {
@@ -794,7 +833,8 @@ button {
   .pb-database-layout,
   .pb-accordion-trigger,
   .pb-accordion-grid,
-  .pb-detail-grid-compact {
+  .pb-detail-grid-compact,
+  .pb-link-module-grid {
     grid-template-columns: 1fr;
   }
 
