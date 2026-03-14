@@ -3,13 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { injectionSites } from "@/lib/peptabase-data";
 import { readSavedPeptideSlugs } from "@/lib/saved-peptides";
+import { calculateInventoryMetrics, readInventory, writeInventory } from "@/lib/inventory-tracker";
 
 const initialInventory = [
   {
     id: "inventory-1",
     peptide: "Semaglutide",
-    strength: "5 mg",
-    quantity: "2 vials",
+    vialStrengthMg: 5,
+    vialCount: 2,
+    doseAmount: 0.5,
+    doseUnit: "mg",
+    administrationsPerWeek: 1,
     notes: "2 ml BAC water reconstitution plan",
     added: "2026-03-13"
   }
@@ -28,7 +32,7 @@ const initialLogs = [
 
 const tabCopy = {
   library: "Saved peptides and research links will live here.",
-  inventory: "Track vial strength, quantity, and reconstitution notes.",
+  inventory: "Track vial count, planned dosage, remaining doses, and estimated cycle duration.",
   logs: "Log peptide, dose, unit, injection site, date, and notes.",
   notes: "Submit notes to developer for research feedback and corrections."
 };
@@ -50,8 +54,11 @@ export default function UserDashboard() {
   const [developerNotes, setDeveloperNotes] = useState([]);
   const [inventoryForm, setInventoryForm] = useState({
     peptide: "",
-    strength: "",
-    quantity: "",
+    vialStrengthMg: "",
+    vialCount: "",
+    doseAmount: "",
+    doseUnit: "mg",
+    administrationsPerWeek: "1",
     notes: "",
     added: ""
   });
@@ -78,6 +85,22 @@ export default function UserDashboard() {
   );
 
   useEffect(() => {
+    function syncInventory() {
+      const stored = readInventory();
+      setInventory(stored.length > 0 ? stored : initialInventory);
+    }
+
+    syncInventory();
+    window.addEventListener("storage", syncInventory);
+    window.addEventListener("peptabase:inventory-updated", syncInventory);
+
+    return () => {
+      window.removeEventListener("storage", syncInventory);
+      window.removeEventListener("peptabase:inventory-updated", syncInventory);
+    };
+  }, []);
+
+  useEffect(() => {
     function syncSavedPeptides() {
       setSavedPeptides(readSavedPeptideSlugs());
     }
@@ -94,14 +117,34 @@ export default function UserDashboard() {
 
   const addInventory = (event) => {
     event.preventDefault();
-    setInventory((current) => [
+
+    const nextItems = [
       {
         id: `inventory-${Date.now()}`,
-        ...inventoryForm
+        peptide: inventoryForm.peptide,
+        vialStrengthMg: Number(inventoryForm.vialStrengthMg),
+        vialCount: Number(inventoryForm.vialCount),
+        doseAmount: Number(inventoryForm.doseAmount),
+        doseUnit: inventoryForm.doseUnit,
+        administrationsPerWeek: Number(inventoryForm.administrationsPerWeek),
+        notes: inventoryForm.notes,
+        added: inventoryForm.added
       },
-      ...current
-    ]);
-    setInventoryForm({ peptide: "", strength: "", quantity: "", notes: "", added: "" });
+      ...inventory
+    ];
+
+    setInventory(nextItems);
+    writeInventory(nextItems);
+    setInventoryForm({
+      peptide: "",
+      vialStrengthMg: "",
+      vialCount: "",
+      doseAmount: "",
+      doseUnit: "mg",
+      administrationsPerWeek: "1",
+      notes: "",
+      added: ""
+    });
   };
 
   const addLog = (event) => {
@@ -165,19 +208,60 @@ export default function UserDashboard() {
         <div className="pb-link-list">
           <form onSubmit={addInventory} className="pb-link-list">
             <input className="pb-field" placeholder="Peptide" value={inventoryForm.peptide} onChange={(e) => setInventoryForm((current) => ({ ...current, peptide: e.target.value }))} required />
-            <input className="pb-field" placeholder="Vial strength" value={inventoryForm.strength} onChange={(e) => setInventoryForm((current) => ({ ...current, strength: e.target.value }))} required />
-            <input className="pb-field" placeholder="Quantity" value={inventoryForm.quantity} onChange={(e) => setInventoryForm((current) => ({ ...current, quantity: e.target.value }))} required />
+            <div className="pb-inline-grid">
+              <input className="pb-field" min="0" step="0.1" type="number" placeholder="Vial strength (mg)" value={inventoryForm.vialStrengthMg} onChange={(e) => setInventoryForm((current) => ({ ...current, vialStrengthMg: e.target.value }))} required />
+              <input className="pb-field" min="1" step="1" type="number" placeholder="Vial count" value={inventoryForm.vialCount} onChange={(e) => setInventoryForm((current) => ({ ...current, vialCount: e.target.value }))} required />
+            </div>
+            <div className="pb-inline-grid">
+              <input className="pb-field" min="0" step="0.1" type="number" placeholder="Dose per administration" value={inventoryForm.doseAmount} onChange={(e) => setInventoryForm((current) => ({ ...current, doseAmount: e.target.value }))} required />
+              <select className="pb-select" value={inventoryForm.doseUnit} onChange={(e) => setInventoryForm((current) => ({ ...current, doseUnit: e.target.value }))}>
+                <option value="mg">mg</option>
+                <option value="mcg">mcg</option>
+              </select>
+            </div>
+            <input className="pb-field" min="1" step="1" type="number" placeholder="Administrations per week" value={inventoryForm.administrationsPerWeek} onChange={(e) => setInventoryForm((current) => ({ ...current, administrationsPerWeek: e.target.value }))} required />
             <textarea className="pb-textarea" placeholder="Reconstitution notes" value={inventoryForm.notes} onChange={(e) => setInventoryForm((current) => ({ ...current, notes: e.target.value }))} />
             <input className="pb-field" type="date" value={inventoryForm.added} onChange={(e) => setInventoryForm((current) => ({ ...current, added: e.target.value }))} required />
             <button className="pb-button" type="submit">Add inventory item</button>
           </form>
-          {inventory.map((item) => (
-            <div key={item.id} className="pb-fact-row">
-              <strong>{item.peptide}</strong><br />
-              {item.strength} · {item.quantity} · {item.added}<br />
-              <span className="pb-subtle">{item.notes}</span>
-            </div>
-          ))}
+
+          {inventory.map((item) => {
+            const metrics = calculateInventoryMetrics(item);
+
+            return (
+              <div key={item.id} className="pb-inventory-card">
+                <div className="pb-inventory-card-head">
+                  <div>
+                    <strong>{item.peptide}</strong>
+                    <div className="pb-subtle">{item.vialStrengthMg} mg per vial | {item.vialCount} vial(s) | added {item.added}</div>
+                  </div>
+                  <div className="pb-pill">{item.doseAmount} {item.doseUnit} per administration</div>
+                </div>
+                <div className="pb-inventory-metrics">
+                  <div className="pb-fact-row">
+                    <div className="pb-fact-label">Total inventory</div>
+                    <strong>{metrics.totalInventoryMg.toFixed(2)} mg</strong>
+                  </div>
+                  <div className="pb-fact-row">
+                    <div className="pb-fact-label">Remaining doses</div>
+                    <strong>{metrics.remainingDoses.toFixed(1)}</strong>
+                  </div>
+                  <div className="pb-fact-row">
+                    <div className="pb-fact-label">Cycle duration</div>
+                    <strong>{metrics.cycleDays.toFixed(0)} days</strong>
+                  </div>
+                  <div className="pb-fact-row">
+                    <div className="pb-fact-label">Cycle duration</div>
+                    <strong>{metrics.cycleWeeks.toFixed(1)} weeks</strong>
+                  </div>
+                </div>
+                <div className="pb-subtle">
+                  {item.administrationsPerWeek} administration(s) per week
+                  {item.notes ? ` | ${item.notes}` : ""}
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : null}
 

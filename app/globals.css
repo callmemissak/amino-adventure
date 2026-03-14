@@ -772,6 +772,29 @@ button {
   padding: 14px;
 }
 
+.pb-inventory-card,
+.pb-inventory-card-head,
+.pb-inventory-metrics {
+  display: grid;
+  gap: 14px;
+}
+
+.pb-inventory-card {
+  border-radius: 16px;
+  background: rgba(230, 237, 243, 0.03);
+  border: 1px solid rgba(230, 237, 243, 0.08);
+  padding: 16px;
+}
+
+.pb-inventory-card-head {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.pb-inventory-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .pb-stack-row {
   display: flex;
   align-items: center;
@@ -895,7 +918,8 @@ button {
   .pb-link-module-grid,
   .pb-section-block-grid,
   .pb-evidence-stats,
-  .pb-review-block-grid {
+  .pb-review-block-grid,
+  .pb-inventory-metrics {
     grid-template-columns: 1fr;
   }
 
@@ -905,6 +929,10 @@ button {
 
   .pb-accordion-side {
     justify-items: start;
+  }
+
+  .pb-inventory-card-head {
+    grid-template-columns: 1fr;
   }
 }
 
