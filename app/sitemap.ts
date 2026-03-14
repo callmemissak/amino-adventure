@@ -5,6 +5,15 @@ import { categoryPageDefinitions } from "@/lib/category-pages";
 import { comparisonPageDefinitions } from "@/lib/comparison-pages";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const createEntry = (
+    url: string,
+    priority: number
+  ): MetadataRoute.Sitemap[number] => ({
+    url,
+    changeFrequency: "weekly",
+    priority
+  });
+
   const peptides = await loadPeptides();
   const comparisons = getComparisonIndex(peptides);
   const staticRoutes = [
@@ -23,20 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   return [
-    ...staticRoutes.map((path) => ({
-      url: absoluteUrl(path),
-      changeFrequency: "weekly",
-      priority: path === "/" ? 1 : 0.7
-    })),
-    ...peptides.map((peptide: { slug: string }) => ({
-      url: absoluteUrl(`/peptides/${peptide.slug}`),
-      changeFrequency: "weekly",
-      priority: 0.8
-    })),
-    ...comparisons.map((comparison) => ({
-      url: absoluteUrl(comparison.href),
-      changeFrequency: "weekly",
-      priority: 0.72
-    }))
+    ...staticRoutes.map((path) => createEntry(absoluteUrl(path), path === "/" ? 1 : 0.7)),
+    ...peptides.map((peptide: { slug: string }) => createEntry(absoluteUrl(`/peptides/${peptide.slug}`), 0.8)),
+    ...comparisons.map((comparison) => createEntry(absoluteUrl(comparison.href), 0.72))
   ];
 }
