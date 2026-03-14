@@ -154,6 +154,25 @@ function SecondaryDisclosure({
   );
 }
 
+function SectionDisclosure({
+  title,
+  children,
+  defaultOpen = false
+}: {
+  title: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details className="pb-section-disclosure" open={defaultOpen}>
+      <summary className="pb-section-disclosure-summary">
+        <span>{title}</span>
+      </summary>
+      <div className="pb-section-disclosure-body">{children}</div>
+    </details>
+  );
+}
+
 export default function PeptideAccordionItem({
   peptide,
   open,
@@ -257,30 +276,25 @@ export default function PeptideAccordionItem({
           </div>
 
           <div className="pb-accordion-content pb-reading-flow">
-            <div className="pb-section-grid">
+            <SectionDisclosure title="Overview" defaultOpen>
               <SectionCard title="Overview">
                 <DetailBlock label="Aliases" value={aliases} />
-                <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
-                <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
+                <DetailBlock label="Administration" value={peptide.administration || peptide.administrationNotes} />
+                <DetailBlock label="Common Cycle Length" value={peptide.commonCycleLength} />
+                <DetailBlock label="Break Before Continuing" value={peptide.breakBeforeContinuing} />
               </SectionCard>
+            </SectionDisclosure>
 
+            <SectionDisclosure title="Mechanism">
               <SectionCard title="Mechanism">
                 <DetailBlock label="Mechanism Summary" value={peptide.mechanismSummary || peptide.mechanismOfAction} />
                 <DetailBlock label="Primary Receptor" value={peptide.primaryReceptor} />
                 <DetailBlock label="Biological Pathway" value={peptide.biologicalPathway} />
                 <DetailBlock label="First Discovered Year" value={peptide.firstDiscoveredYear} />
               </SectionCard>
-            </div>
+            </SectionDisclosure>
 
-            <div className="pb-section-grid">
-              <SectionCard title="Dose / Half-life">
-                <DetailBlock label="Dose Range" value={peptide.doseRange} />
-                <DetailBlock label="Common Cycle Length" value={peptide.commonCycleLength} />
-                <DetailBlock label="Break Before Continuing" value={peptide.breakBeforeContinuing} />
-                <DetailBlock label="Administration" value={peptide.administration || peptide.administrationNotes} />
-                <DetailBlock label="Half-life" value={peptide.halfLife} />
-              </SectionCard>
-
+            <SectionDisclosure title="Evidence">
               <SectionCard title="Evidence">
                 <div className="pb-evidence-stats">
                   <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
@@ -291,28 +305,37 @@ export default function PeptideAccordionItem({
                 <DetailBlock label="Known Limitations" value={peptide.knownLimitations} />
                 <DetailBlock label="Safety Notes" value={peptide.safetyNotes} />
               </SectionCard>
-            </div>
+            </SectionDisclosure>
 
-            <SectionCard title="Studies" className="pb-section-card-wide">
-              <div className="pb-studies-header">
-                <p className="pb-body">
-                  Direct source links and PubMed references stay visible here so each entry reads like a useful research record.
-                </p>
-              </div>
-              {references.length > 0 ? (
-                <div className="pb-reference-list">
-                  {references.map((reference, index) => (
-                    <CitationCard key={`${peptide.slug}-reference-${index}`} reference={reference} />
-                  ))}
+            <SectionDisclosure title="Research Applications">
+              <SectionCard title="Research Applications">
+                <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
+                <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
+              </SectionCard>
+            </SectionDisclosure>
+
+            <SectionDisclosure title="Studies">
+              <SectionCard title="Studies" className="pb-section-card-wide">
+                <div className="pb-studies-header">
+                  <p className="pb-body">
+                    Direct source links and PubMed references stay visible here so each entry reads like a useful research record.
+                  </p>
                 </div>
-              ) : (
-                <div className="pb-empty">No direct source links are attached to this entry yet.</div>
-              )}
-              <div className="pb-live-feed-block">
-                <div className="pb-section-block-title">Live PubMed Feed</div>
-                <LiveResearchFeed peptideName={peptide.pubmedQuery || peptide.name} compact />
-              </div>
-            </SectionCard>
+                {references.length > 0 ? (
+                  <div className="pb-reference-list">
+                    {references.map((reference, index) => (
+                      <CitationCard key={`${peptide.slug}-reference-${index}`} reference={reference} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="pb-empty">No direct source links are attached to this entry yet.</div>
+                )}
+                <div className="pb-live-feed-block">
+                  <div className="pb-section-block-title">Live PubMed Feed</div>
+                  <LiveResearchFeed peptideName={peptide.pubmedQuery || peptide.name} compact />
+                </div>
+              </SectionCard>
+            </SectionDisclosure>
 
             <SecondaryDisclosure title="Editorial review, quick facts, and related tools">
               <div className="pb-secondary-grid">
