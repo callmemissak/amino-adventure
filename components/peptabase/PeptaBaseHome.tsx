@@ -265,7 +265,7 @@ export default function PeptaBaseHome({
                 <Link href="/saved-peptides" className="pb-inline-link">Saved list</Link>
               </div>
             </div>
-            <div className="pb-filter-row">
+            <div className={`pb-filter-row ${isCondensed ? "is-condensed" : ""}`}>
               {FILTER_GROUPS.map((filter) => (
                 <button
                   key={filter.id}

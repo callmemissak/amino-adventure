@@ -221,36 +221,20 @@ export default function PeptideAccordionItem({
         <div id={`peptide-panel-${peptide.slug}`} className="pb-accordion-panel">
           <div className="pb-expanded-hero">
             <div className="pb-expanded-copy">
-              <div className="pb-inline-link-list">
-                <span className="pb-chip">{peptide.category || "Research peptide"}</span>
-                {peptide.kind ? <span className="pb-pill">{peptide.kind}</span> : null}
-                <span className="pb-pill">{peptide.evidenceLevel || evidenceLevel}</span>
-              </div>
               <h3 className="pb-expanded-title">{peptide.name}</h3>
               <p className="pb-expanded-summary">{peptide.overview || peptide.mechanismSummary || peptide.mechanismOfAction || "Research summary coming soon."}</p>
-              <div className="pb-section-nav">
-                {["Overview", "Mechanism", "Dosing", "Evidence", "Studies"].map((label) => (
-                  <span key={label} className="pb-section-chip">{label}</span>
-                ))}
+              <div className="pb-expanded-meta">
+                <span>{peptide.category || "Research peptide"}</span>
+                <span>{peptide.evidenceLevel || evidenceLevel}</span>
+                <span>Reviewed {peptide.reviewDate || lastReviewedDate}</span>
               </div>
             </div>
 
-            <div className="pb-review-block">
-              <div className="pb-review-block-head">
-                <div>
-                  <div className="pb-eyebrow">Research Review</div>
-                  <h3 className="pb-card-title">Editorial credibility snapshot</h3>
-                </div>
-              </div>
+            <div className="pb-review-block pb-review-block-compact">
               <div className="pb-review-block-grid">
                 <StatCard label="Reviewed By" value={peptide.reviewedBy || "PeptaBase editorial review"} />
-                <StatCard label="Review Date" value={peptide.reviewDate || lastReviewedDate} />
                 <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
                 <StatCard label="Citation Count" value={peptide.citationCount ?? references.length} />
-              </div>
-              <div className="pb-review-block-notes">
-                <div className="pb-fact-label">Revision Notes</div>
-                <div className="pb-body">{peptide.revisionNotes || "No revision notes have been added for this entry yet."}</div>
               </div>
             </div>
           </div>
