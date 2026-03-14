@@ -661,6 +661,30 @@ button {
   border: 1px solid rgba(230, 237, 243, 0.08);
 }
 
+.pb-section-block {
+  display: grid;
+  gap: 12px;
+}
+
+.pb-section-block-title {
+  color: var(--secondary);
+  font-family: "Courier New", monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pb-section-block-grid,
+.pb-evidence-stats {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pb-citation-block {
+  margin-top: 4px;
+}
+
 .pb-link-module-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -838,7 +862,9 @@ button {
   .pb-accordion-trigger,
   .pb-accordion-grid,
   .pb-detail-grid-compact,
-  .pb-link-module-grid {
+  .pb-link-module-grid,
+  .pb-section-block-grid,
+  .pb-evidence-stats {
     grid-template-columns: 1fr;
   }
 

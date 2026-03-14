@@ -97,6 +97,10 @@ export function findStacksForPeptide(peptide: any) {
 }
 
 export function getEvidenceLevel(peptide: any) {
+  if (safeText(peptide.evidenceLevel)) {
+    return peptide.evidenceLevel;
+  }
+
   const referenceCount = peptide.references?.length ?? 0;
 
   if (referenceCount >= 3) {
@@ -111,6 +115,20 @@ export function getEvidenceLevel(peptide: any) {
 }
 
 export function getLastReviewedDate(peptide: any) {
+  if (safeText(peptide.reviewDate)) {
+    const parsedReviewDate = Date.parse(peptide.reviewDate);
+
+    if (!Number.isNaN(parsedReviewDate)) {
+      return new Date(parsedReviewDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
+
+    return peptide.reviewDate;
+  }
+
   const label = safeText(peptide.updatedLabel);
   const parsed = Date.parse(label);
 

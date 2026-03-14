@@ -41,6 +41,22 @@ type PeptideEntry = {
   commonCycleLength?: string;
   breakBeforeContinuing?: string;
   administrationNotes?: string;
+  mechanismSummary?: string;
+  primaryReceptor?: string;
+  biologicalPathway?: string;
+  clinicalTrialsCount?: number | null;
+  animalStudiesCount?: number | null;
+  mechanisticStudiesCount?: number | null;
+  evidenceLevel?: string;
+  firstDiscoveredYear?: string;
+  commonResearchGoals?: string[];
+  stackSynergies?: string[];
+  knownLimitations?: string;
+  safetyNotes?: string;
+  reviewedBy?: string;
+  reviewDate?: string;
+  revisionNotes?: string;
+  citationCount?: number | null;
   administration?: string;
   halfLife?: string;
   fdaStatus?: string;
@@ -89,6 +105,30 @@ function CitationCard({ reference }: { reference: ReferenceEntry }) {
   );
 }
 
+function StatCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="pb-fact-row">
+      <div className="pb-fact-label">{label}</div>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function SectionBlock({
+  title,
+  children
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="pb-section-block">
+      <div className="pb-section-block-title">{title}</div>
+      <div className="pb-section-block-grid">{children}</div>
+    </section>
+  );
+}
+
 export default function PeptideAccordionItem({
   peptide,
   open,
@@ -113,6 +153,8 @@ export default function PeptideAccordionItem({
   const [copied, setCopied] = useState(false);
   const aliases = peptide.aliases?.length ? peptide.aliases.join(" | ") : "Not yet added";
   const keywordList = peptide.keywords?.length ? peptide.keywords : [];
+  const researchGoals = peptide.commonResearchGoals?.length ? peptide.commonResearchGoals : peptide.researchApplications ?? [];
+  const stackSynergies = peptide.stackSynergies?.length ? peptide.stackSynergies : [];
   const references = peptide.references?.filter((reference) => reference.url) ?? [];
   const pubmedReferences = useMemo(
     () => references.filter((reference) => reference.url?.includes("pubmed.ncbi.nlm.nih.gov")),
@@ -172,46 +214,70 @@ export default function PeptideAccordionItem({
         <div id={`peptide-panel-${peptide.slug}`} className="pb-accordion-panel">
           <div className="pb-accordion-grid">
             <div className="pb-accordion-content">
-              <div className="pb-detail-grid pb-detail-grid-compact">
+              <SectionBlock title="Mechanism">
                 <DetailBlock label="Overview" value={peptide.overview} />
-                <DetailBlock label="Aliases" value={aliases} />
+                <DetailBlock label="Mechanism Summary" value={peptide.mechanismSummary || peptide.mechanismOfAction} />
+                <DetailBlock label="Primary Receptor" value={peptide.primaryReceptor} />
                 <DetailBlock label="Mechanism of Action" value={peptide.mechanismOfAction} />
+              </SectionBlock>
+
+              <SectionBlock title="Biological Pathway">
+                <DetailBlock label="Biological Pathway" value={peptide.biologicalPathway} />
+                <DetailBlock label="Administration" value={peptide.administration} />
+                <DetailBlock label="Half-life" value={peptide.halfLife} />
+                <DetailBlock label="First Discovered Year" value={peptide.firstDiscoveredYear} />
+              </SectionBlock>
+
+              <SectionBlock title="Evidence">
+                <div className="pb-evidence-stats">
+                  <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
+                  <StatCard label="Citation Count" value={peptide.citationCount ?? references.length} />
+                  <StatCard label="Clinical Trials" value={peptide.clinicalTrialsCount ?? "0"} />
+                  <StatCard label="Animal Studies" value={peptide.animalStudiesCount ?? "0"} />
+                  <StatCard label="Mechanistic Studies" value={peptide.mechanisticStudiesCount ?? "0"} />
+                  <StatCard label="PubMed Links" value={pubmedReferences.length} />
+                </div>
+              </SectionBlock>
+
+              <SectionBlock title="Research Goals">
+                <DetailBlock label="Common Research Goals" value={renderList(researchGoals)} />
+                <DetailBlock label="Stack Synergies" value={renderList(stackSynergies)} />
                 <DetailBlock label="Research Applications" value={renderList(peptide.researchApplications)} />
+                <DetailBlock label="Aliases" value={aliases} />
+              </SectionBlock>
+
+              <SectionBlock title="Limitations">
+                <DetailBlock label="Known Limitations" value={peptide.knownLimitations} />
                 <DetailBlock label="Dose Range" value={peptide.doseRange} />
                 <DetailBlock label="Common Cycle Length" value={peptide.commonCycleLength} />
-                <DetailBlock label="Half-life" value={peptide.halfLife} />
-                <DetailBlock label="Administration" value={peptide.administration} />
+                <DetailBlock label="Administration Notes" value={peptide.administrationNotes} />
+              </SectionBlock>
+
+              <SectionBlock title="Safety Notes">
+                <DetailBlock label="Safety Notes" value={peptide.safetyNotes} />
                 <DetailBlock label="FDA Status" value={peptide.fdaStatus} />
                 <DetailBlock label="Development Stage" value={peptide.developmentStage} />
-              </div>
+                <DetailBlock label="Break Before Continuing" value={peptide.breakBeforeContinuing} />
+              </SectionBlock>
 
-              <DetailBlock label="Administration Notes" value={peptide.administrationNotes} />
+              <SectionBlock title="Editorial Review">
+                <DetailBlock label="Reviewed By" value={peptide.reviewedBy} />
+                <DetailBlock label="Review Date" value={peptide.reviewDate || lastReviewedDate} />
+                <DetailBlock label="Revision Notes" value={peptide.revisionNotes} />
+                <DetailBlock label="Keywords / Tags">
+                  <div className="pb-tag-row">
+                    {keywordList.length > 0 ? keywordList.map((keyword) => <span key={keyword} className="pb-pill">{keyword}</span>) : "Not yet added"}
+                  </div>
+                </DetailBlock>
+              </SectionBlock>
 
-              <DetailBlock label="Keywords / Tags">
-                <div className="pb-tag-row">
-                  {keywordList.length > 0 ? keywordList.map((keyword) => <span key={keyword} className="pb-pill">{keyword}</span>) : "Not yet added"}
-                </div>
-              </DetailBlock>
-
-              <div className="pb-detail-block">
+              <div className="pb-detail-block pb-citation-block">
                 <div className="pb-fact-label">Citation Snapshot</div>
                 <div className="pb-link-list">
-                  <div className="pb-fact-row">
-                    <div className="pb-fact-label">Last reviewed</div>
-                    <strong>{lastReviewedDate}</strong>
-                  </div>
-                  <div className="pb-fact-row">
-                    <div className="pb-fact-label">Evidence level</div>
-                    <strong>{evidenceLevel}</strong>
-                  </div>
-                  <div className="pb-fact-row">
-                    <div className="pb-fact-label">Source links</div>
-                    <strong>{references.length}</strong>
-                  </div>
-                  <div className="pb-fact-row">
-                    <div className="pb-fact-label">PubMed links</div>
-                    <strong>{pubmedReferences.length}</strong>
-                  </div>
+                  <StatCard label="Last reviewed" value={peptide.reviewDate || lastReviewedDate} />
+                  <StatCard label="Evidence level" value={peptide.evidenceLevel || evidenceLevel} />
+                  <StatCard label="Source links" value={references.length} />
+                  <StatCard label="PubMed links" value={pubmedReferences.length} />
                 </div>
               </div>
 
