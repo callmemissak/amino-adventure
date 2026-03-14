@@ -10,8 +10,14 @@ export async function generateStaticParams() {
   return categoryPageDefinitions.map((entry) => ({ slug: entry.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const category = getCategoryPage(params.slug);
+async function getSlug(params: any) {
+  const resolved = await params;
+  return resolved?.slug ?? "";
+}
+
+export async function generateMetadata({ params }: any) {
+  const slug = await getSlug(params);
+  const category = getCategoryPage(slug);
 
   if (!category) {
     return { title: "Category Not Found | PeptaBase" };
@@ -24,15 +30,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   });
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = getCategoryPage(params.slug);
+export default async function CategoryPage({ params }: any) {
+  const slug = await getSlug(params);
+  const category = getCategoryPage(slug);
 
   if (!category) {
     notFound();
   }
 
   const peptides = await loadPeptides();
-  const categoryPeptides = getPeptidesForCategoryPage(peptides, params.slug);
+  const categoryPeptides = getPeptidesForCategoryPage(peptides, slug);
   const comparisons = getComparisonIndex(peptides).filter(
     (entry) =>
       categoryPeptides.some((peptide) => peptide.slug === entry.left.slug) ||

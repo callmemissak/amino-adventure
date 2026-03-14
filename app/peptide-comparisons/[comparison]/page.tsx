@@ -11,8 +11,14 @@ export async function generateStaticParams() {
   return getComparisonIndex(peptides).map((entry: { slug: string }) => ({ comparison: entry.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { comparison: string } }) {
-  const richComparison = getComparisonPageDefinition(params.comparison);
+async function getComparisonSlug(params: any) {
+  const resolved = await params;
+  return resolved?.comparison ?? "";
+}
+
+export async function generateMetadata({ params }: any) {
+  const comparisonSlug = await getComparisonSlug(params);
+  const richComparison = getComparisonPageDefinition(comparisonSlug);
 
   if (richComparison) {
     return buildPageMetadata({
@@ -23,7 +29,7 @@ export async function generateMetadata({ params }: { params: { comparison: strin
   }
 
   const peptides = await loadPeptides();
-  const comparison = findComparisonBySlug(peptides, params.comparison);
+  const comparison = findComparisonBySlug(peptides, comparisonSlug);
 
   if (!comparison) {
     return { title: "Comparison Not Found | PeptaBase" };
@@ -36,13 +42,15 @@ export async function generateMetadata({ params }: { params: { comparison: strin
   });
 }
 
-export default async function ComparisonDetailPage({ params }: { params: { comparison: string } }) {
-  if (getComparisonPageDefinition(params.comparison)) {
-    redirect(`/compare/${params.comparison}`);
+export default async function ComparisonDetailPage({ params }: any) {
+  const comparisonSlug = await getComparisonSlug(params);
+
+  if (getComparisonPageDefinition(comparisonSlug)) {
+    redirect(`/compare/${comparisonSlug}`);
   }
 
   const peptides = await loadPeptides();
-  const comparison = findComparisonBySlug(peptides, params.comparison);
+  const comparison = findComparisonBySlug(peptides, comparisonSlug);
 
   if (!comparison) {
     notFound();

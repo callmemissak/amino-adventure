@@ -9,8 +9,14 @@ export async function generateStaticParams() {
   return peptides.map((entry: { slug: string }) => ({ slug: entry.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const peptide = await loadPeptideBySlug(params.slug);
+async function getSlug(params: any) {
+  const resolved = await params;
+  return resolved?.slug ?? "";
+}
+
+export async function generateMetadata({ params }: any) {
+  const slug = await getSlug(params);
+  const peptide = await loadPeptideBySlug(slug);
 
   if (!peptide) {
     return { title: "Peptide Not Found | PeptaBase" };
@@ -19,9 +25,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return buildPeptideMetadata(peptide);
 }
 
-export default async function PeptideSlugPage({ params }: { params: { slug: string } }) {
+export default async function PeptideSlugPage({ params }: any) {
+  const slug = await getSlug(params);
   const peptides = await loadPeptides();
-  const peptide = peptides.find((entry: { slug: string }) => entry.slug === params.slug);
+  const peptide = peptides.find((entry: { slug: string }) => entry.slug === slug);
 
   if (!peptide) {
     notFound();
@@ -40,7 +47,7 @@ export default async function PeptideSlugPage({ params }: { params: { slug: stri
           peptideStructuredData(peptide)
         ]}
       />
-      <PeptaBaseHome peptides={peptides} initialSlug={params.slug} {...viewModel} />
+      <PeptaBaseHome peptides={peptides} initialSlug={slug} {...viewModel} />
     </>
   );
 }

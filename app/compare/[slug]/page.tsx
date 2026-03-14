@@ -17,12 +17,18 @@ function buildStudyLinks(left: any, right: any) {
   return pubmedFirst.slice(0, 6);
 }
 
+async function getSlug(params: any) {
+  const resolved = await params;
+  return resolved?.slug ?? "";
+}
+
 export async function generateStaticParams() {
   return comparisonPageDefinitions.map((entry) => ({ slug: entry.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const definition = getComparisonPageDefinition(params.slug);
+export async function generateMetadata({ params }: any) {
+  const slug = await getSlug(params);
+  const definition = getComparisonPageDefinition(slug);
 
   if (!definition) {
     return { title: "Comparison Not Found | PeptaBase" };
@@ -35,8 +41,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   });
 }
 
-export default async function ComparePage({ params }: { params: { slug: string } }) {
-  const definition = getComparisonPageDefinition(params.slug);
+export default async function ComparePage({ params }: any) {
+  const slug = await getSlug(params);
+  const definition = getComparisonPageDefinition(slug);
 
   if (!definition) {
     notFound();
