@@ -13,7 +13,7 @@
   --accent-bg: #eff6ff;
   --warning: #ffc857;
   --danger: #ff8b8b;
-  --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 11px;
@@ -196,9 +196,9 @@ button {
 .pb-header-summary-pill {
   display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
+  padding: 5px 9px;
   border-radius: 999px;
-  background: var(--bg-muted);
+  background: #fbfcfe;
   border: 1px solid var(--border);
   color: var(--text-soft);
 }
@@ -307,7 +307,7 @@ button {
 
 .pb-button:hover,
 .pb-button-secondary:hover {
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .pb-button:hover {
@@ -347,7 +347,7 @@ button {
 
 .pb-card:hover {
   border-color: #d1d5db;
-  transform: translateY(-2px);
+  transform: none;
 }
 
 .pb-hero-panel {
@@ -373,7 +373,7 @@ button {
 .pb-stat {
   padding: 14px;
   border-radius: var(--radius-sm);
-  background: var(--bg-muted);
+  background: #fbfcfe;
   border: 1px solid var(--border);
 }
 
@@ -438,14 +438,14 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
-  font-size: 0.64rem;
+  padding: 5px 9px;
+  font-size: 0.61rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .pb-chip {
-  background: #f3f4f6;
+  background: #f8fafc;
   border: 1px solid #d1d5db;
   color: var(--text-muted);
 }
@@ -458,12 +458,12 @@ button {
 
 .pb-pill.active {
   color: var(--primary);
-  background: var(--accent-bg);
+  background: #f4f8ff;
   border-color: #bfdbfe;
 }
 
 .pb-tag {
-  background: var(--bg-muted);
+  background: #f8fafc;
   border: 1px solid var(--border);
   color: var(--text-soft);
 }
@@ -542,13 +542,13 @@ button {
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
   transition: top 0.22s ease, padding 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .pb-database-toolbar.is-condensed {
   padding: 8px 10px;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
 }
 
 .pb-toolbar-top {
@@ -604,9 +604,9 @@ button {
 .pb-results-pill {
   display: inline-flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 999px;
-  background: var(--bg-muted);
+  background: #fbfcfe;
   border: 1px solid var(--border);
   color: var(--text-muted);
   font-family: "Courier New", monospace;
@@ -632,7 +632,7 @@ button {
   min-height: 24px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--bg-muted);
+  background: #f8fafc;
   color: inherit;
 }
 
@@ -658,7 +658,7 @@ button {
   border: 1px solid var(--border);
   border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.035);
   overflow: clip;
   scroll-margin-top: var(--pb-scroll-offset);
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
@@ -667,7 +667,7 @@ button {
 .pb-accordion-item:hover,
 .pb-accordion-item.is-open {
   border-color: #d1d5db;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 }
 
 .pb-accordion-trigger {
@@ -764,7 +764,7 @@ button {
 .pb-preview-tag {
   display: inline-flex;
   align-items: center;
-  padding: 5px 9px;
+  padding: 4px 8px;
   border-radius: 999px;
   background: #f3f4f6;
   border: 1px solid var(--border);
@@ -823,7 +823,7 @@ button {
   padding: 14px;
   border-radius: 16px;
   border: 1px solid #dbeafe;
-  background: var(--accent-bg);
+  background: #f8fbff;
 }
 
 .pb-review-block-compact .pb-review-block-grid {
@@ -881,7 +881,7 @@ button {
   border-radius: 16px;
   background: #ffffff;
   border: 1px solid var(--border);
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.02);
 }
 
 .pb-section-card-grid,
@@ -929,9 +929,9 @@ button {
 .pb-inline-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 999px;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 12px;
   border: 1px solid #bfdbfe;
   background: var(--accent-bg);
   color: var(--primary);
@@ -939,9 +939,9 @@ button {
 }
 
 .pb-inline-link:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
-  transform: translateY(-1px);
+  background: #eaf2ff;
+  border-color: #bfdbfe;
+  transform: none;
 }
 
 .pb-empty-state {
@@ -968,7 +968,7 @@ button {
 .pb-library-item,
 .pb-log-row {
   border-radius: 12px;
-  background: #ffffff;
+  background: #fcfdff;
   border: 1px solid var(--border);
   padding: 12px;
 }
