@@ -212,6 +212,24 @@ export default function PeptideAccordionItem({
 
       {open ? (
         <div id={`peptide-panel-${peptide.slug}`} className="pb-accordion-panel">
+          <div className="pb-review-block">
+            <div className="pb-review-block-head">
+              <div>
+                <div className="pb-eyebrow">Research Review</div>
+                <h3 className="pb-card-title">Editorial review and evidence snapshot</h3>
+              </div>
+            </div>
+            <div className="pb-review-block-grid">
+              <StatCard label="Reviewed By" value={peptide.reviewedBy || "PeptaBase editorial review"} />
+              <StatCard label="Review Date" value={peptide.reviewDate || lastReviewedDate} />
+              <StatCard label="Evidence Level" value={peptide.evidenceLevel || evidenceLevel} />
+              <StatCard label="Citation Count" value={peptide.citationCount ?? references.length} />
+            </div>
+            <div className="pb-review-block-notes">
+              <div className="pb-fact-label">Revision Notes</div>
+              <div className="pb-body">{peptide.revisionNotes || "No revision notes have been added for this entry yet."}</div>
+            </div>
+          </div>
           <div className="pb-accordion-grid">
             <div className="pb-accordion-content">
               <SectionBlock title="Mechanism">
