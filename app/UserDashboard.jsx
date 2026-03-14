@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { injectionSites } from "@/lib/peptabase-data";
+import { readSavedPeptideSlugs } from "@/lib/saved-peptides";
 
 const initialInventory = [
   {
@@ -32,12 +33,20 @@ const tabCopy = {
   notes: "Submit notes to developer for research feedback and corrections."
 };
 
+function formatSavedName(value) {
+  return String(value || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState("inventory");
   const [selectedSite, setSelectedSite] = useState("abdomen");
   const [inventory, setInventory] = useState(initialInventory);
   const [logs, setLogs] = useState(initialLogs);
-  const [savedPeptides, setSavedPeptides] = useState(["Semaglutide", "Tirzepatide", "BPC-157"]);
+  const [savedPeptides, setSavedPeptides] = useState([]);
   const [developerNotes, setDeveloperNotes] = useState([]);
   const [inventoryForm, setInventoryForm] = useState({
     peptide: "",
@@ -67,6 +76,21 @@ export default function UserDashboard() {
     ],
     []
   );
+
+  useEffect(() => {
+    function syncSavedPeptides() {
+      setSavedPeptides(readSavedPeptideSlugs());
+    }
+
+    syncSavedPeptides();
+    window.addEventListener("storage", syncSavedPeptides);
+    window.addEventListener("peptabase:saved-peptides-updated", syncSavedPeptides);
+
+    return () => {
+      window.removeEventListener("storage", syncSavedPeptides);
+      window.removeEventListener("peptabase:saved-peptides-updated", syncSavedPeptides);
+    };
+  }, []);
 
   const addInventory = (event) => {
     event.preventDefault();
@@ -130,12 +154,10 @@ export default function UserDashboard() {
 
       {activeTab === "library" ? (
         <div className="pb-link-list">
+          {savedPeptides.length === 0 ? <div className="pb-empty">No saved peptides yet. Use the bookmark button on any peptide entry.</div> : null}
           {savedPeptides.map((item) => (
-            <div key={item} className="pb-library-item">{item}</div>
+            <div key={item} className="pb-library-item">{formatSavedName(item)}</div>
           ))}
-          <button className="pb-button-secondary" type="button" onClick={() => setSavedPeptides((current) => [...current, "Retatrutide"])}>
-            Save sample peptide
-          </button>
         </div>
       ) : null}
 

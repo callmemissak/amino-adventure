@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import SavedPeptideButton from "@/components/peptabase/SavedPeptideButton";
 
 const LiveResearchFeed = dynamic(() => import("@/components/peptabase/LiveResearchFeed"), {
   loading: () => <div className="pb-empty">Loading PubMed studies...</div>
@@ -360,7 +361,9 @@ export default function PeptideAccordionItem({
                 <button type="button" className="pb-button-secondary" onClick={handleCopyLink}>
                   {copied ? "Link copied" : "Copy peptide link"}
                 </button>
+                <SavedPeptideButton slug={peptide.slug} name={peptide.name} />
                 <Link href="/dashboard" className="pb-button-secondary">Save in dashboard</Link>
+                <Link href="/saved-peptides" className="pb-button-secondary">View saved peptides</Link>
                 <Link href="/calculator" className="pb-button-secondary">Browse calculators</Link>
               </div>
 

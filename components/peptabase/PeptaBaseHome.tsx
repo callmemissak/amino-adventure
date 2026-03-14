@@ -59,6 +59,7 @@ const utilityLinks = [
   { href: "/peptide-comparisons", label: "Peptide comparisons" },
   { href: "/peptide-stacks", label: "Peptide stacks" },
   { href: "/research-glossary", label: "Research glossary" },
+  { href: "/saved-peptides", label: "Saved peptides" },
   { href: "/categories/healing", label: "Healing peptides" },
   { href: "/categories/glp-1", label: "GLP-1 category" },
   { href: "/categories/gh-secretagogues", label: "GH secretagogues" },

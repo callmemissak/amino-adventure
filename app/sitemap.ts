@@ -11,6 +11,7 @@ export default async function sitemap() {
     "/calculator",
     "/reconstitution-calculator",
     "/glp-1-dose-calculator",
+    "/saved-peptides",
     ...categoryPageDefinitions.map((entry) => `/categories/${entry.slug}`),
     ...comparisonPageDefinitions.map((entry) => `/compare/${entry.slug}`),
     "/peptide-comparisons",
